@@ -61,18 +61,36 @@ def activation_forward(Z,activation):
   else:
     print("relu or sigmoid only")
 
-def forward_prop(X,weights):
+def dropout_forward(A_prev,prob):
+  mask = np.random.rand(A_prev.shape[0],A_prev.shape[1])
+  mask = mask > prob
+  A = A_prev * mask
+  return A,mask
+
+def dropout_backprop(dA,mask,prob):
+  dA = dA * mask
+  dA /= prob
+  return dA
+
+def forward_prop(X,weights,training,dropout=None):
   
   """
-    TODO: ADD DROPOUT
+  dropout is a dict, with key being layer to implement dropout and value being the lose prob
   """
+
   L = len(weights.values()) // 2
   cache = {}
-  
+
   A = X.copy()
   for l in range(L-1):
     Z = layer_forward(weights['W'+str(l)],weights['b'+str(l)],A)
     A = activation_forward(Z,'relu')
+    if l in dropout:
+      if training:
+        A,mask = dropout_forward(A,dropout[l])
+        cache['Mask'+str(l)] = mask
+      else:
+        A*= dropout[l]
     cache['Z'+str(l)] = Z
     cache['A'+str(l)] = A
     
@@ -80,3 +98,4 @@ def forward_prop(X,weights):
   A = activation_forward(Z,'sigmoid')
   
   return A,cache
+
