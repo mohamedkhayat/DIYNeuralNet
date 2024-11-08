@@ -124,7 +124,7 @@ def dropout_backprop(dA,mask):
 def forward_prop(X,weights,training,dropout=None):
   
   """
-  dropout is a dict, with key being layer to implement dropout and value being the lose prob
+  dropout is a dict, with key being layer to implement drop["W" + str(l + 1)].T, dZ)out and value being the lose prob
   training being a boolean to know if applying dropout is needed or not since dropout is only applied
   during training and not inference
   this function is used to make a prediction yhat for an input x 
@@ -163,6 +163,9 @@ def backprop(x,y,weights,cache,dropout=None,lamb=None):
   backpropagation, takes in input x used for calculating the gradients for the first layer, y used for calculating
   the gradients for the last layer,cache that has the mask and the weights for each layer, and dropout to know which
   layers we need to multiply by their mask
+  
+  THIS SHOULD BE INCORRECT AND NEEDS FIXING
+  
   """
   derivatives = {}
 
@@ -182,7 +185,7 @@ def backprop(x,y,weights,cache,dropout=None,lamb=None):
   dZl = dZL
   dbl = dbL
 
-  for l in range(L -1,-1,-1):
+  for l in range(L -1,0,-1):
 
     dAl = np.dot(weights["W"+str(l+1)].T,dZl)
     
@@ -201,7 +204,7 @@ def backprop(x,y,weights,cache,dropout=None,lamb=None):
     derivatives["db"+str(l)] = dbl 
   
   
-  dA0 = np.dot(weights["W0"].T,dZl)
+  dA0 = np.dot(weights["W1"].T,dZl)
   relu_derivative_0 = relu_backward(cache['Z0'])
 
   dZ0 = dA0 * relu_derivative_0
@@ -214,4 +217,3 @@ def backprop(x,y,weights,cache,dropout=None,lamb=None):
   derivatives["db0"] = db0
 
   return derivatives
-
