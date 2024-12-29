@@ -2,7 +2,7 @@ from DeviceSelector import *
 
 np = get_numpy()
 
-def binary_cross_entropy(yhat,y,weights=None,lamb=0.01):
+def binary_cross_entropy(yhat,y,weights=None,lamb=None):
   """
   loss function, takes in predictions yhat, true labels y, weights and scaling factor
   lambda for L2 reg and returns Negative Log likelyhood
