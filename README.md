@@ -92,7 +92,7 @@ layer_dims = [2, 128, 64, 32, 16, 1]  # Gradually decreasing units
 - [ ] Implement gradient clipping if needed
 - [ ] Improve the model customization (layers and dropout selection)
 - [ ] Potentially add a UI
-      
+- [ ] Add GPU support with cumpy
 
 ## License
 
