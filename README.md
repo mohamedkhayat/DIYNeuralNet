@@ -12,7 +12,7 @@ A NumPy and CuPy implementation of a deep neural network with modern features in
 - **Configurable Dropout**:
   - Set custom dropout rates for each layer using a list
   - Values between 0 and 1 (1 = keep all units, 0.5 = drop half the units)
-  - Example: `[1, 0.8, 0.8, 0.9, 1]` applies 20% dropout to the first two hidden layers and 10% to the third
+  - Example: `{'2':0.8, '3':0.8, '4':0.9}` applies 20% dropout to the first two hidden layers and 10% to the third
 - **He Weight Initialization**: Proper initialization for ReLU networks
 - **Dropout Regularization**: Configurable dropout rates per layer
 - **L2 Regularization**: Weight decay to prevent overfitting
