@@ -10,9 +10,9 @@ A NumPy implementation of a deep neural network with modern features including d
   - Specify any number of units per layer
   - Example: `[2, 128, 64, 32, 1]` creates a network with 2 input units, three hidden layers (128, 64, and 32 units), and 1 output unit
 - **Configurable Dropout**:
-  -Set custom dropout rates for each layer using a list
-  -Values between 0 and 1 (1 = keep all units, 0.5 = drop half the units)
-  -Example: `[1, 0.8, 0.8, 0.9, 1]` applies 20% dropout to first two hidden layers and 10% to the third
+  - Set custom dropout rates for each layer using a list
+  - Values between 0 and 1 (1 = keep all units, 0.5 = drop half the units)
+  - Example: `[1, 0.8, 0.8, 0.9, 1]` applies 20% dropout to first two hidden layers and 10% to the third
 - **He Weight Initialization**: Proper initialization for ReLU networks
 - **Dropout Regularization**: Configurable dropout rates per layer
 - **L2 Regularization**: Weight decay to prevent overfitting
