@@ -36,46 +36,48 @@ cupy
 ### Basic Example
 
 ```python
-# Generate sample XOR data
-X, y = generate_xor_data(n_samples=2000, noise=0.2)
+# Example of how to define and train the model
 
-# Define custom network architecture
-layer_dims = [2, 128, 64, 32, 1]  # [input_dim, hidden1, hidden2, hidden3, output_dim]
-dropout_rates = [1, 0.8, 0.8, 1, 1]  # Dropout keep probabilities per layer
+# Define network architecture
+layer_dims = [n_features, 64, 64, 32, n_classes]  # Input layer, hidden layers, and output layer
 
-# Initialize weights
-weights = he_initialization(layer_dims)
+# Dropout rates for layers (layer '2' will have 10% dropout, layer '3' will have 15% dropout)
+dropout_rates = {'2': 0.9, '3': 0.85}
 
-# Train the model
-weights = train(X_train, y_train, 
-                weights,
-                epochs=1000,
-                learning_rate=0.01,
-                lamb=0.01,  # L2 regularization parameter
-                dropout=dropout_rates,
-                use_gpu=True)  # Set to True for GPU acceleration
+# Learning rate and L2 regularization parameter
+learning_rate = 0.1
+lamb = 0.01
 
-# Make predictions
-y_pred, _ = forward_prop(X_test, weights, training=False, use_gpu=True)
-accuracy = evaluate(y_pred, y_test)
+# Initialize the Neural Network model
+model = NeuralNetwork(n_classes, layer_dims, dropout_rates, learning_rate, lamb)
+
+# Train the model on the data (X, y) for 300 epochs
+model.fit(X, y, 300)
+
+# Predict on the test set
+y_pred_test = model.predict(X_test)
+
+# Calculate the test accuracy
+test_accuracy = model.accuracy_score(y_pred_test, y_test)
+print(f"Test Accuracy: {float(test_accuracy):.4f}")
 ```
 
 ### Customizing Network Architecture
 
-You can easily modify the network architecture by changing the `layer_dims` list:
+You can easily modify the network architecture by changing the `layer_dims` list and `dropout_rates` dictionary:
 
 ```python
 # Wide network with aggressive dropout
-layer_dims = [2, 256, 256, 1]
-dropout_rates = [1, 0.5, 0.5, 1]  # 50% dropout on both hidden layers
+layer_dims = [2, 256, 256, 1]  # Input layer, two hidden layers, output layer
+dropout_rates = {1: 0.9, 2: 0.5, 3: 0.5}  # Keep 90% in input, 50% dropout on both hidden layers
 
 # Deep network with varying dropout
-layer_dims = [2, 64, 64, 32, 32, 16, 1]
-dropout_rates = [1, 0.8, 0.8, 0.7, 0.7, 0.9, 1]  # More dropout in middle layers
+layer_dims = [2, 64, 64, 32, 32, 16, 1]  # Input layer, 5 hidden layers, output layer
+dropout_rates = {2: 0.8, 3: 0.8, 4: 0.7, 5: 0.7, 6: 0.9}  # Varying dropout rates
 
 # Pyramid architecture with graduated dropout
-layer_dims = [2, 128, 64, 32, 16, 1]
-dropout_rates = [1, 0.7, 0.8, 0.9, 0.95, 1]  # Less dropout as layers get smaller
+layer_dims = [2, 128, 64, 32, 16, 1]  # Input layer, 4 hidden layers, output layer
+dropout_rates = {2: 0.7, 3: 0.8, 4: 0.9}  # Gradually decreasing dropout
 ```
 
 ## Implementation Details
