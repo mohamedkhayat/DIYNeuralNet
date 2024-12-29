@@ -15,6 +15,7 @@ class NeuralNetwork():
     self.learning_rate = learning_rate
     self.lamb = lamb
     self.weights = he_initialization(self.layers_dim)
+    self.n_layers = len(self.weights) // 2  
     
   def forward_prop(self,X,training):
     
@@ -25,13 +26,13 @@ class NeuralNetwork():
     this function is used to make a prediction yhat for an input x 
     """
 
-    L = len(self.weights) // 2 
-    
     cache = {}
 
     A_prev = X.copy()
     
     cache['A0'] = A_prev
+    
+    L = self.n_layers
     
     for l in range(1,L):
 
@@ -40,7 +41,6 @@ class NeuralNetwork():
       A =  activation_forward(Z,'relu')
 
       if training and self.dropout is not None and str(l) in self.dropout:
-
         A,mask =  dropout_forward(A,self.dropout[str(l)])
           
         cache['Mask'+str(l)] = mask
@@ -70,7 +70,7 @@ class NeuralNetwork():
 
     m = y.shape[1]
     
-    L = len(self.weights) // 2
+    L = self.n_layers
     
     A = cache["A"+str(L)] 
     
@@ -100,7 +100,7 @@ class NeuralNetwork():
       A_prev = cache['A'+str(l-1)]
       dWl = (1 / m) * np.dot(dZl,A_prev.T)
 
-      if self.lamb:
+      if self.lamb is not None:
         dWl += (self.lamb / m) * self.weights["W"+str(l)]
         
       dbl = (1 / m) * np.sum(dZl,axis=1,keepdims=True)
