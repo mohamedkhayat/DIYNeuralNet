@@ -23,6 +23,7 @@ A NumPy implementation of a deep neural network with modern features including d
 
 ```
 numpy
+cupy
 ```
 
 ## Usage
