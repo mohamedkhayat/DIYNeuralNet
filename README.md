@@ -1,7 +1,3 @@
-Here's the updated version of your `README` that reflects the addition of CUDA support with CuPy, and the support for both CPU and GPU execution:
-
----
-
 # Neural Network Implementation from Scratch
 
 A NumPy and CuPy implementation of a deep neural network with modern features including dropout regularization, L2 regularization, and He initialization. The architecture is fully configurable - you can specify any number of layers and units per layer to suit your needs. The code supports both CPU and GPU execution for enhanced performance.
