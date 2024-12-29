@@ -1,5 +1,5 @@
 from DeviceSelector import *
-
+import pathlib
 np = get_numpy()
 
 def train_test_split(X,y,test_size=0.2):
@@ -25,3 +25,8 @@ def generate_xor_data(n_samples,np ,noise=0.2):
     X += np.random.normal(0, noise, X.shape)  # Add noise
     return X, y
   
+def load_mnist():
+  data = numpy.loadtxt(pathlib.Path('Data','balanced_mnist_1.csv'),delimiter=',',skiprows=1)
+  X = data[:,1:].reshape(784,-1)
+  y = data[:,0].reshape(1,-1)
+  return X,y
