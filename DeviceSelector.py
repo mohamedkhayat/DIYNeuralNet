@@ -11,7 +11,7 @@ try:
     np = cupy
     
   else:
-    np = cupy
+    np = numpy
     
 except Exception as e:
   np = numpy
