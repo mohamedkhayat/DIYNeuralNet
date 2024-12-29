@@ -28,6 +28,20 @@ numpy 1.19.5
 cupy 8.3.0
 ```
 
+GPU acceleration only works with Nvidia GPUs and will automatically be turned on if an nvidia graphic's card is detected, otherwise it will default to CPU
+
+## Instructions
+
+```
+conda create -n cupy python=3.8.20 numpy=1.19.5
+conda activate cupy
+conda install cupy
+git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
+cd DIYNeuralNet
+# You can play around with the code, change the architechture, hyper paramaters, activations, dataset, once you want to train the model save your changes and then run
+python Train.py
+```
+
 ## Usage
 
 ### Basic Example
