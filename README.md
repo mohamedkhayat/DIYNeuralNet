@@ -24,7 +24,7 @@ A NumPy and CuPy implementation of a deep neural network with modern features in
 
 ```
 python 3.8.20
-numpy numpy 1.19.5
+numpy 1.19.5
 cupy 8.3.0
 ```
 
