@@ -1,23 +1,28 @@
+Here's the updated version of your `README` that reflects the addition of CUDA support with CuPy, and the support for both CPU and GPU execution:
+
+---
+
 # Neural Network Implementation from Scratch
 
-A NumPy implementation of a deep neural network with modern features including dropout regularization, L2 regularization, and He initialization. The architecture is fully configurable - you can specify any number of layers and units per layer to suit your needs.
+A NumPy and CuPy implementation of a deep neural network with modern features including dropout regularization, L2 regularization, and He initialization. The architecture is fully configurable - you can specify any number of layers and units per layer to suit your needs. The code supports both CPU and GPU execution for enhanced performance.
 
 ## Features
 
-- **Pure NumPy Implementation**: Built using only NumPy for numerical computations
-- **Flexible Architecture**: 
+- **Pure NumPy and CuPy Implementation**: Built using NumPy for CPU-based computations and CuPy for GPU acceleration.
+- **Flexible Architecture**:
   - Define any number of layers
   - Specify any number of units per layer
   - Example: `[2, 128, 64, 32, 1]` creates a network with 2 input units, three hidden layers (128, 64, and 32 units), and 1 output unit
 - **Configurable Dropout**:
   - Set custom dropout rates for each layer using a list
   - Values between 0 and 1 (1 = keep all units, 0.5 = drop half the units)
-  - Example: `[1, 0.8, 0.8, 0.9, 1]` applies 20% dropout to first two hidden layers and 10% to the third
+  - Example: `[1, 0.8, 0.8, 0.9, 1]` applies 20% dropout to the first two hidden layers and 10% to the third
 - **He Weight Initialization**: Proper initialization for ReLU networks
 - **Dropout Regularization**: Configurable dropout rates per layer
 - **L2 Regularization**: Weight decay to prevent overfitting
 - **Binary Classification**: Using sigmoid activation and binary cross-entropy loss
 - **Train-Test Split**: Built-in data splitting functionality
+- **CUDA Support (CuPy)**: Supports both CPU and GPU computation, enabling faster training on compatible hardware.
 
 ## Requirements
 
@@ -47,16 +52,18 @@ weights = train(X_train, y_train,
                 epochs=1000,
                 learning_rate=0.01,
                 lamb=0.01,  # L2 regularization parameter
-                dropout=dropout_rates)
+                dropout=dropout_rates,
+                use_gpu=True)  # Set to True for GPU acceleration
 
 # Make predictions
-y_pred, _ = forward_prop(X_test, weights, training=False)
+y_pred, _ = forward_prop(X_test, weights, training=False, use_gpu=True)
 accuracy = evaluate(y_pred, y_test)
 ```
 
 ### Customizing Network Architecture
 
 You can easily modify the network architecture by changing the `layer_dims` list:
+
 ```python
 # Wide network with aggressive dropout
 layer_dims = [2, 256, 256, 1]
@@ -90,6 +97,7 @@ dropout_rates = [1, 0.7, 0.8, 0.9, 0.95, 1]  # Less dropout as layers get smalle
 4. **Training**
    - Binary cross-entropy loss
    - Basic gradient descent optimization
+   - GPU support for faster training (using CuPy)
 
 ## Future Improvements
 
@@ -99,8 +107,12 @@ dropout_rates = [1, 0.7, 0.8, 0.9, 0.95, 1]  # Less dropout as layers get smalle
 - [ ] Potentially add batch normalization
 - [ ] Implement gradient clipping if needed
 - [ ] Improve the model customization (layers and dropout selection)
+- [ ] Implement model saving and loading functionality
+- [ ] Add support for more advanced activation functions like LeakyReLU, Tanh, and Softmax
+- [ ] Add support for multi-class classification with categorical cross-entropy
+- [ ] Add support for regression tasks with MSE and RMSE loss functions
 - [ ] Potentially add a UI
-- [ ] Add GPU support with cupy
+
 
 ## License
 
