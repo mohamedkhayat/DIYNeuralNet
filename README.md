@@ -99,7 +99,7 @@ dropout_rates = [1, 0.7, 0.8, 0.9, 0.95, 1]  # Less dropout as layers get smalle
 - [ ] Implement gradient clipping if needed
 - [ ] Improve the model customization (layers and dropout selection)
 - [ ] Potentially add a UI
-- [ ] Add GPU support with cumpy
+- [ ] Add GPU support with cupy
 
 ## License
 
