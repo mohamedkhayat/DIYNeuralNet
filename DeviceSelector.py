@@ -4,7 +4,6 @@ import cupy
 _GPU_AVAILABLE = False
 
 try:
-  print("hello")
   output = os.popen('nvidia-smi').read()
   if "NVIDIA-SMI" in output:
     try:

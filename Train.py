@@ -3,9 +3,9 @@ from DeviceSelector import *
 from NeuralNet import NeuralNetwork
 
 np = get_numpy()
-
+  
 _GPU_AVAILABLE = is_gpu_available()
-
+print(_GPU_AVAILABLE)
 np.random.seed(42)
 
 X,y = load_mnist()
