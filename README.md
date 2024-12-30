@@ -38,7 +38,10 @@ conda activate cupy
 conda install cupy
 git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
 cd DIYNeuralNet
-# You can play around with the code, change the architechture, hyper paramaters, activations, dataset, once you want to train the model save your changes and then run
+```
+You can play around with the code, change the architechture, hyper paramaters, activations,
+dataset, once you want to train the model save your changes and then run
+```
 python Train.py
 ```
 
