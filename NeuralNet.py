@@ -1,5 +1,6 @@
 from DeviceSelector import *
 import time
+from EarlyStopping import EarlyStopping
 
 np = get_numpy()
 
@@ -121,7 +122,8 @@ class NeuralNetwork():
     for paramater in self.weights.keys():
       self.weights[paramater] -= self.learning_rate * derivatives["d"+paramater]
 
-  def fit(self,X,y,epochs=30,validation_data=None):
+  def fit(self,X,y,epochs=30,validation_data=None,EarlyStopping_Patience = None):
+    
     History = {}
     
     train_losses = []
@@ -131,6 +133,11 @@ class NeuralNetwork():
     test_accuracies = []
     
     start_time = time.time()
+    
+    if EarlyStopping_Patience is not None and EarlyStopping_Patience >= 1:
+      
+      er = EarlyStopping(EarlyStopping_Patience)
+      
     for epoch in range(epochs):
 
       yhat,cache = self.forward_prop(X,True)      
@@ -164,7 +171,9 @@ class NeuralNetwork():
       if epoch % 50 == 0:
         print(f"Epoch : {epoch} : Loss : {float(loss):.4f}")
     
-
+      if EarlyStopping_Patience is not None and er(test_loss):
+        break
+        
     end_time = time.time()
     
     History = {'Train_losses':train_losses,

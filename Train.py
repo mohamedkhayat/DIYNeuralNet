@@ -40,7 +40,6 @@ X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=ratio)
 # Here we specify the architechture of our MLP, these are all hyperparamaters you can play with
 
 # Number of hidden layers and units
-
 layer_dims = [n_features, # Input size (number of features)
               64, # Hidden layer 1 Number of units
               64, # Hidden layer 2 Number of units
@@ -80,7 +79,9 @@ model = NeuralNetwork(n_classes, # Needed
 History = model.fit(X,
           y,
           1000,
-          validation_data=(X_test,y_test)
+          validation_data=(X_test,y_test),
+          EarlyStopping_Patience= 10 # Early Stopping Patience, if not specified, no Early Stopping is used
+                                     # Else, Training stops if Val Loss does not improve during n = Patience of steps
           )
 
 # Print Time Elapsed and Device used to train
