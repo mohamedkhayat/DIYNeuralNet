@@ -22,7 +22,7 @@ def train_test_split(X,y,test_size=0.2):
   
   return X_train,X_test,y_train,y_test
   
-def generate_xor_data(n_samples,np ,noise=0.2):
+def generate_xor_data(n_samples,np ,noise=0.01):
     """Generates XOR-like data."""
     X = np.random.rand(2, n_samples) * 2 - 1  # Centered around 0
     y = np.logical_xor(X[0, :] > 0, X[1, :] > 0).astype(int).reshape(1, -1)
