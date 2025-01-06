@@ -117,17 +117,22 @@ dropout_rates = {2: 0.7, 3: 0.8, 4: 0.9}  # Gradually decreasing dropout
 
 ## Future Improvements
 
-- [ ] Add mini-batch gradient descent
-- [ ] Implement Adam optimizer
-- [ ] Potentially add batch normalization
-- [ ] Implement gradient clipping if needed
+- [ ] Add mini-batches
+- [ ] Implement More Optimizers
+- [ ] Add more Weight Initialization methods
+- [ ] Add batch normalization
+- [ ] Implement gradient clipping 
 - [ ] Improve the model customization (layers and dropout selection)
 - [ ] Implement model saving and loading functionality
-- [ ] Add support for more advanced activation functions like LeakyReLU, Tanh, and Softmax
+- [ ] Add more activation functions like LeakyReLU, Tanh, and Softmax
 - [ ] Add support for multi-class classification with categorical cross-entropy
 - [ ] Add support for regression tasks with MSE and RMSE loss functions
-- [ ] Potentially add a UI
-
+- [ ] Add a UI
+- [ ] add Learning Rate Scheduling
+- [ ] Implement autograd engine
+- [ ] add Hyper paramater Tuning
+- [ ] Add More metrics
+- [ ] Add Learning Rate Schedulers
 
 ## License
 
