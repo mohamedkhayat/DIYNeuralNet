@@ -1,4 +1,5 @@
 from DeviceSelector import *
+import time
 
 np = get_numpy()
 
@@ -9,6 +10,7 @@ from Losses import binary_cross_entropy
 class NeuralNetwork():
   
   def __init__(self,n_classes,layers_dim,dropout,learning_rate,lamb,):
+
     self.n_classes = n_classes
     self.layers_dim = layers_dim
     self.dropout = dropout
@@ -41,6 +43,7 @@ class NeuralNetwork():
       A =  activation_forward(Z,'relu')
 
       if training and self.dropout is not None and str(l) in self.dropout:
+        
         A,mask =  dropout_forward(A,self.dropout[str(l)])
           
         cache['Mask'+str(l)] = mask
@@ -94,6 +97,7 @@ class NeuralNetwork():
     for l in reversed(range(1,L)):
 
       if self.dropout is not None and str(l) in self.dropout and  "Mask"+str(l) in cache:
+        
         dA_prev = dropout_backprop(dA_prev,cache['Mask'+str(l)],self.dropout[str(l)])
 
       dZl = dA_prev * relu_backward(cache['Z'+str(l)])
@@ -118,7 +122,6 @@ class NeuralNetwork():
       self.weights[paramater] -= self.learning_rate * derivatives["d"+paramater]
 
   def fit(self,X,y,epochs=30,validation_data=None):
-    
     History = {}
     
     train_losses = []
@@ -127,6 +130,7 @@ class NeuralNetwork():
     train_accuracies = []
     test_accuracies = []
     
+    start_time = time.time()
     for epoch in range(epochs):
 
       yhat,cache = self.forward_prop(X,True)      
@@ -160,10 +164,14 @@ class NeuralNetwork():
       if epoch % 50 == 0:
         print(f"Epoch : {epoch} : Loss : {float(loss):.4f}")
     
+
+    end_time = time.time()
+    
     History = {'Train_losses':train_losses,
                'Test_losses':test_losses,
                'Train_accuracy':train_accuracies,
-               'Test_accuracy':test_accuracies
+               'Test_accuracy':test_accuracies,
+               'Time_Elapsed':end_time - start_time
                }
                
     return History
