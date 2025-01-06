@@ -117,20 +117,57 @@ class NeuralNetwork():
     for paramater in self.weights.keys():
       self.weights[paramater] -= self.learning_rate * derivatives["d"+paramater]
 
-  def fit(self,X,y,epochs=30):
+  def fit(self,X,y,epochs=30,validation_data=None):
+    
+    History = {}
+    
+    train_losses = []
+    test_losses = []
+    
+    train_accuracies = []
+    test_accuracies = []
     
     for epoch in range(epochs):
 
       yhat,cache = self.forward_prop(X,True)      
       
       loss = binary_cross_entropy(yhat,y,self.weights,self.lamb)
+
+      train_losses.append(loss.tolist())
+
+      y_train_pred_labels = (yhat > 0.5).astype(int)
+      train_accuracy = self.accuracy_score(y_train_pred_labels,y)
+      train_accuracies.append(train_accuracy.item())
       
+      if validation_data is not None:
+        
+        X_test,y_test = validation_data
+        
+        y_test_pred_prob,_ = self.forward_prop(X_test,training=False)     
+        
+        test_loss = binary_cross_entropy(y_test_pred_prob,y_test,self.weights,self.lamb)
+        
+        test_losses.append(test_loss.tolist())
+        
+        y_test_pred_labels = (y_test_pred_prob > 0.5).astype(int)
+        test_accuracy = self.accuracy_score(y_test_pred_labels,y_test)
+        test_accuracies.append(test_accuracy.item())
+        
       derivatives = self.backprop(y,cache)
       
       self.optimize(derivatives)
-      if epoch % (epochs // 10) == 0:
+      
+      if epoch % 50 == 0:
         print(f"Epoch : {epoch} : Loss : {float(loss):.4f}")
-  
+    
+    History = {'Train_losses':train_losses,
+               'Test_losses':test_losses,
+               'Train_accuracy':train_accuracies,
+               'Test_accuracy':test_accuracies
+               }
+               
+    return History
+    
   def predict(self,X):
 
     predictions,_ = self.forward_prop(X,False)
