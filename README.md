@@ -119,7 +119,6 @@ dropout_rates = {2: 0.7, 3: 0.8, 4: 0.9}  # Gradually decreasing dropout
 
 - [ ] Add mini-batch gradient descent
 - [ ] Implement Adam optimizer
-- [ ] Add early stopping
 - [ ] Potentially add batch normalization
 - [ ] Implement gradient clipping if needed
 - [ ] Improve the model customization (layers and dropout selection)
