@@ -7,8 +7,7 @@ try:
   output = os.popen('nvidia-smi').read()
   if "NVIDIA-SMI" in output:
     try:
-      print(cupy.cuda.runtime.getDeviceCount())
-      _GPU_AVAILABLE = True
+      _GPU_AVAILABLE = bool(cupy.cuda.runtime.getDeviceCount())
       np = cupy
     except Exception as e:
       np = numpy
