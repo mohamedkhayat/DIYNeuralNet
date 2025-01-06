@@ -15,6 +15,9 @@ try:
   X,y = load_mnist()
   
 except:
+  
+  #Falling back to generating XOR in case of errors
+  
   n_samples = 2000
   X, y = generate_xor_data(n_samples,np)
 
@@ -39,7 +42,6 @@ X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=ratio)
 
 # Here we specify the architechture of our MLP, these are all hyperparamaters you can play with
 
-# Number of hidden layers and units
 layer_dims = [n_features, # Input size (number of features)
               64, # Hidden layer 1 Number of units
               64, # Hidden layer 2 Number of units
@@ -52,9 +54,9 @@ layer_dims = [n_features, # Input size (number of features)
 
 dropout_rates = {
   '2':0.9, # dropout applied to hidden layer 2, dropping (1 - 0.9) = 0.1 or 10 % of units
-  '3':0.85 # dropout applied to hidden layer 3, dropping (1 - 0.85) = 0.15 or 15 % of units
+  '3':0.85, # dropout applied to hidden layer 3, dropping (1 - 0.85) = 0.15 or 15 % of units
   }
-  
+
 # Learning rate, controls how drastic weight updates are
 
 learning_rate = 0.03
@@ -63,7 +65,7 @@ learning_rate = 0.03
 # higher values mean more intense regularization -> less over fitting but risk of under fitting
 # lower values mean less intense regularization -> less under fitting but risk of over fitting        
 
-lamb = 0.01
+lamb = 0.001
 
 #initializing the model
 
