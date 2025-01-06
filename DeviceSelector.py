@@ -18,7 +18,14 @@ except Exception as e:
   raise ValueError(f"Exception {e}")
 
 def get_numpy():
+  """
+  If nvidia gpu is detected, np == cupy, an alternative to numpy that uses the GPU to accelerate
+  computation
+  """
   return np
 
 def is_gpu_available():
+  """
+  returns True if gpu is available, False if not
+  """
   return _GPU_AVAILABLE
