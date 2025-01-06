@@ -3,7 +3,7 @@ from DeviceSelector import *
 from NeuralNet import NeuralNetwork
 
 np = get_numpy()
-
+  
 _GPU_AVAILABLE = is_gpu_available()
 
 #Setting random seed for reproducibility
