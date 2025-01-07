@@ -116,4 +116,4 @@ test_accuracy = model.accuracy_score(y_pred_test,y_test)
 print(f"Test Accuracy : {float(test_accuracy):.4f}")
 
 #Plotting random n_images from the test set with their predictions
-plot_image(X=X_test,model=model,n_images=6)
+plot_image(X=X_test,model=model,n_images=6,original_image_shape=(28,28))

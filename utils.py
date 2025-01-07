@@ -30,11 +30,11 @@ def generate_xor_data(n_samples,np ,noise=0.01):
     X += np.random.normal(0, noise, X.shape)  # Add noise
     return X, y
   
-def plot_image(X,model,n_images):
+def plot_image(X,model,n_images,original_image_shape = (28,28)):
 
   plt.figure(figsize=(6,6))
   indices = [randint(0,len(X)) for _ in range(n_images)]
-
+  HEIGHT,WIDTH = original_image_shape
   for i,idx in enumerate(indices):
   
     test_example = X[:,idx]
@@ -48,10 +48,14 @@ def plot_image(X,model,n_images):
       test_example = test_example.get()
   
     plt.subplot(2,(n_images + 1)// 2, i + 1)
-    test_example = test_example.reshape(28,28) * 255.
+    
+    test_example = test_example.reshape(HEIGHT,WIDTH) * 255.
+    
     plt.title("One" if test_pred.item() == 1 else "not a One")
+    
     plt.imshow(test_example,cmap='gray')
     plt.axis('off')
+    
   plt.tight_layout()
   plt.show()
 
