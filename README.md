@@ -26,6 +26,7 @@ A NumPy and CuPy implementation of a deep neural network with modern features in
 python 3.8.20
 numpy 1.19.5
 cupy 8.3.0
+matplotlib
 ```
 
 GPU acceleration only works with Nvidia GPUs and will automatically be turned on if an nvidia graphic's card is detected, otherwise it will default to CPU
@@ -35,7 +36,7 @@ GPU acceleration only works with Nvidia GPUs and will automatically be turned on
 ```
 conda create -n cupy python=3.8.20 numpy=1.19.5
 conda activate cupy
-conda install cupy
+conda install cupy matplotlib
 git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
 cd DIYNeuralNet
 ```
