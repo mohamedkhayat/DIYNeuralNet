@@ -3,8 +3,9 @@ from DeviceSelector import *
 from NeuralNet import NeuralNetwork
 
 np = get_numpy()
-  
+
 _GPU_AVAILABLE = is_gpu_available()
+
 # Setting random seed for reproducibility
 
 np.random.seed(42)
@@ -39,12 +40,13 @@ if(_GPU_AVAILABLE):
 # split data into train and validation data
 
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=ratio)
-
+print(X_train.shape,y_train.shape)
 # Here we specify the architechture of our MLP, these are all hyperparamaters you can play with
 
 layer_dims = [n_features, # Input size (number of features)
               64, # Hidden layer 1 Number of units
               64, # Hidden layer 2 Number of units
+              32, # Hidden layer 3 Number of units
               32, # Hidden layer 3 Number of units
               #.... you can add more hidden layers, by adding more elements to the list
               n_classes # Output size (number of labels)
@@ -80,7 +82,7 @@ model = NeuralNetwork(n_classes, # Needed
 
 History = model.fit(X,
           y,
-          1000,
+          100,
           validation_data=(X_test,y_test),
           EarlyStopping_Patience= 10 # Early Stopping Patience, if not specified, no Early Stopping is used
                                      # Else, Training stops if Val Loss does not improve during n = Patience of steps
@@ -111,3 +113,15 @@ y_pred_test = model.predict(X_test)
 
 test_accuracy = model.accuracy_score(y_pred_test,y_test)
 print(f"Test Accuracy : {float(test_accuracy):.4f}")
+
+indices = [1,400,800,1200]
+
+for idx in indices:
+  
+  test_example = X_test[:,idx]
+  test_pred = model.predict(test_example)
+  
+  if(_GPU_AVAILABLE == True):
+    test_example = test_example.get()
+    
+  plot_image(test_example,test_pred)

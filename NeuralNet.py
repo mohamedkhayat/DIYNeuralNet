@@ -78,7 +78,18 @@ class NeuralNetwork():
     
     A = cache["A"+str(L)] 
     
-    dZL= A - y
+    """
+    this only works for binary classification, should change it to work with multiple tasks
+    should divide it in 2, and not have it hard coded, but with functions
+    
+    dAL = deriviative_loss()
+    dZL = dAL * deriviative_last_activation_function()
+    
+    also, should change the way activations work, either pass them as a list and do the same thing as layer_dims, and pass it as a list
+    or completly revise the way I make the model, make a Layer class and make it like tensorflow's Sequential API which is better, but a headache
+    """
+    
+    dZL= A - y # dL/dA * dA/dZ 
     
     A_prev = cache['A'+str(L-1)]
     
@@ -186,7 +197,8 @@ class NeuralNetwork():
     return History
     
   def predict(self,X):
-
+    if(len(X.shape) == 1):
+      X = X.reshape(-1,1)
     predictions,_ = self.forward_prop(X,False)
 
     return (predictions>0.5).astype(int)

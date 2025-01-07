@@ -31,7 +31,12 @@ def generate_xor_data(n_samples,np ,noise=0.01):
   
 def plot_image(X,y):
   plt.figure(figsize=(4,4))
+  
+  if(len(X.shape) == 1):
+    X = X.reshape(-1,1)
+  
   X = X.reshape(28,28) * 255.
+  plt.title("One" if y == 1 else "not a One")
   plt.imshow(X,cmap='gray')
   plt.show()
 
@@ -42,7 +47,6 @@ def load_mnist():
   """
   data = numpy.loadtxt(pathlib.Path('Data','balanced_mnist_1.csv'),delimiter=',',skiprows=1)
   X = data[:,1:].transpose()
-  
   y = data[:,0].reshape(1,-1)
   return np.asarray(X),np.asarray(y)
 
