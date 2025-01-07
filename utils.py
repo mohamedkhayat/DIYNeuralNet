@@ -29,15 +29,22 @@ def generate_xor_data(n_samples,np ,noise=0.01):
     X += np.random.normal(0, noise, X.shape)  # Add noise
     return X, y
   
+def plot_image(X,y):
+  plt.figure(figsize=(4,4))
+  X = X.reshape(28,28) * 255.
+  plt.imshow(X,cmap='gray')
+  plt.show()
+
 def load_mnist():
   """
   Loads a transformed mnist dataset, Only keeping labels 0 and 1 for binary classification,
   and using under sampling for the dataset to be balanded
   """
   data = numpy.loadtxt(pathlib.Path('Data','balanced_mnist_1.csv'),delimiter=',',skiprows=1)
-  X = data[:,1:].reshape(784,-1)
+  X = data[:,1:].transpose()
+  
   y = data[:,0].reshape(1,-1)
-  return X,y
+  return np.asarray(X),np.asarray(y)
 
 def plot_metrics(History):
   
@@ -90,3 +97,4 @@ def plot_metrics(History):
   
   except Exception as e:
     print(f"Error : {e}, PS : this function expects you chose to input validation data during fit if you chose not to that could be the source of the issue")
+
