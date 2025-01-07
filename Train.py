@@ -2,6 +2,7 @@ from utils import *
 from DeviceSelector import *
 from NeuralNet import NeuralNetwork
 
+from random import randint
 np = get_numpy()
 
 _GPU_AVAILABLE = is_gpu_available()
@@ -40,7 +41,7 @@ if(_GPU_AVAILABLE):
 # split data into train and validation data
 
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=ratio)
-print(X_train.shape,y_train.shape)
+
 # Here we specify the architechture of our MLP, these are all hyperparamaters you can play with
 
 layer_dims = [n_features, # Input size (number of features)
@@ -114,14 +115,5 @@ y_pred_test = model.predict(X_test)
 test_accuracy = model.accuracy_score(y_pred_test,y_test)
 print(f"Test Accuracy : {float(test_accuracy):.4f}")
 
-indices = [1,400,800,1200]
-
-for idx in indices:
-  
-  test_example = X_test[:,idx]
-  test_pred = model.predict(test_example)
-  
-  if(_GPU_AVAILABLE == True):
-    test_example = test_example.get()
-    
-  plot_image(test_example,test_pred)
+#Plotting random n_images from the test set with their predictions
+plot_image(X=X_test,model=model,n_images=6)

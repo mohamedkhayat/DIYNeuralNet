@@ -1,6 +1,7 @@
 from DeviceSelector import *
 import pathlib
 import matplotlib.pyplot as plt
+from random import randint
 np = get_numpy()
 
 def train_test_split(X,y,test_size=0.2):
@@ -29,15 +30,29 @@ def generate_xor_data(n_samples,np ,noise=0.01):
     X += np.random.normal(0, noise, X.shape)  # Add noise
     return X, y
   
-def plot_image(X,y):
-  plt.figure(figsize=(4,4))
+def plot_image(X,model,n_images):
+
+  plt.figure(figsize=(6,6))
+  indices = [randint(0,len(X)) for _ in range(n_images)]
+
+  for i,idx in enumerate(indices):
   
-  if(len(X.shape) == 1):
-    X = X.reshape(-1,1)
+    test_example = X[:,idx]
+
+    if(len(test_example.shape) == 1):
+      test_example = test_example.reshape(-1,1)
+      
+    test_pred = model.predict(test_example)
+   
+    if(is_gpu_available() == True):
+      test_example = test_example.get()
   
-  X = X.reshape(28,28) * 255.
-  plt.title("One" if y == 1 else "not a One")
-  plt.imshow(X,cmap='gray')
+    plt.subplot(2,(n_images + 1)// 2, i + 1)
+    test_example = test_example.reshape(28,28) * 255.
+    plt.title("One" if test_pred.item() == 1 else "not a One")
+    plt.imshow(test_example,cmap='gray')
+    plt.axis('off')
+  plt.tight_layout()
   plt.show()
 
 def load_mnist():
