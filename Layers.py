@@ -1,8 +1,8 @@
 from DeviceSelector import *
 from abc import ABC,abstractmethod
-#np = get_numpy()
+np = get_numpy()
 
-import numpy as np
+#import numpy as np
 def he_initialization(layer_dims):
   """
     He initilization, takes a list [input_dim,hidden1_dim,hidden2_dim,....,hiddenn_dim]
@@ -66,10 +66,20 @@ class Layer(ABC):
 class Dense(Layer):
   def __init__(self,input_size,output_size,initializer='he'):
     super().__init__()
-    if(initializer == 'he'):
-      self.params['W'] = np.random.randn(output_size,input_size) * np.sqrt(2/input_size)
+    self.params['W'] = np.random.randn(output_size, input_size)
 
-    self.params["b"] = np.zeros((output_size,1))
+    if(initializer == 'he'):
+      self.params['W'] *= np.sqrt(2 / input_size)
+
+    elif(initializer == 'glorot'):
+
+      limit = np.sqrt(6) / (np.sqrt(input_size + output_size))
+      self.params['W'] = np.random.uniform(-limit, limit, size=(output_size,input_size))
+
+    else:
+      print("Not a valid Initialization method, using random init")     
+
+    self.params["b"] = np.zeros((output_size, 1))
 
     self.grads["dW"] = None
     self.grads['db'] = None
@@ -83,7 +93,7 @@ class Dense(Layer):
   def backward(self,dZ):
     batch_size = self.input.shape[1]
     self.grads['dW'] = dZ @ self.input.T / batch_size
-    self.grads['db'] = np.sum(dZ,axis=1,keepdims=True) / batch_size
+    self.grads['db'] = np.sum(dZ, axis=1, keepdims=True) / batch_size
     dA_prev = (self.params['W'].T @ dZ)
     return dA_prev
 
@@ -92,3 +102,24 @@ class Dense(Layer):
  
   def get_grads(self):
     return self.grads
+
+class Dropout(Layer):
+  
+  def __init__(self,keep_prob):
+    super().__init__()
+    self.keep_prob = keep_prob
+    self.mask = None
+    
+  def forward(self,A,train=True):
+    mask = (np.random.rand(A.shape[0],A.shape[1]) < self.keep_prob).astype(float)
+    
+    if train == True:
+
+      self.mask = mask
+      A = A * mask / self.keep_prob
+      
+    return A 
+
+  def backward(self,dA):
+    return dA * self.mask / self.keep_prob
+    
