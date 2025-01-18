@@ -1,13 +1,11 @@
 from DeviceSelector import *
 from abc import ABC,abstractmethod
-#np = get_numpy()
+np = get_numpy()
 
-import numpy as np
+"""
 def binary_cross_entropy(yhat,y,weights=None,lamb=None):
-  """
   loss function, takes in predictions yhat, true labels y, weights and scaling factor
   lambda for L2 reg and returns Negative Log likelyhood
-  """
   
   n = yhat.shape[1]
   epsilon = 1e-8
@@ -27,11 +25,7 @@ def binary_cross_entropy(yhat,y,weights=None,lamb=None):
     
   return loss 
 
-
 """
-ADD LOSS DERIVATIVE
-"""
-
 class Loss(ABC):
   def __init__(self):
     super().__init__()
@@ -44,7 +38,7 @@ class Loss(ABC):
     pass
 
 class BCELoss(Loss):
-  
+  #NEED TO ADD L2 
   def __init__(self):
 
     self.batch_size = None
