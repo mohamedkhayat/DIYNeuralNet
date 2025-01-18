@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from random import randint
 np = get_numpy()
 
+#import numpy as np
 def train_test_split(X,y,test_size=0.2):
   """
   Takes in matrices X (features) and y (target),and test size, which represents ratio of data to be used
@@ -33,8 +34,11 @@ def generate_xor_data(n_samples,np ,noise=0.01):
 def plot_image(X,model,n_images,original_image_shape = (28,28)):
 
   plt.figure(figsize=(6,6))
+  
   indices = [randint(0,len(X)) for _ in range(n_images)]
+  
   HEIGHT,WIDTH = original_image_shape
+  
   for i,idx in enumerate(indices):
   
     test_example = X[:,idx]
@@ -70,13 +74,16 @@ def load_mnist():
   return np.asarray(X),np.asarray(y)
 
 def plot_metrics(History):
-  
+  print("plot metrics was called ! ")
   try:
     train_accuracy = History['Train_accuracy']
     train_losses = History['Train_losses']
     test_losses,test_accuracy = History['Test_losses'],History['Test_accuracy']
-
-    plt.figure(figsize=(10,8))
+  
+    plt.clf()
+    
+    plt.figure(1)
+    plt.clf()
     plt.title('Loss per Epoch')
     plt.plot(list(train_losses),label="Train loss",c='r')
     plt.plot(list(test_losses),label="Test loss",c='b')
@@ -97,12 +104,13 @@ def plot_metrics(History):
     plt.grid(True)
     plt.show()
     
-    plt.figure(figsize=(10,8))
+    plt.figure(2)
+    plt.clf()
     plt.title('Accuracy per Epoch')
     plt.plot(train_accuracy,label="Train accuracy",c='r')
     plt.plot(test_accuracy,label="Test accuracy",c='b')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss')
+    plt.ylabel('Accuracy')
     plt.legend()
     
     y_train_max = max(train_accuracy)
@@ -121,3 +129,22 @@ def plot_metrics(History):
   except Exception as e:
     print(f"Error : {e}, PS : this function expects you chose to input validation data during fit if you chose not to that could be the source of the issue")
 
+def create_mini_batches(X, y, batch_size = 64,
+                        shuffle = True, drop_last = True):
+                          
+    num_samples = X.shape[1]
+    indices = np.arange(num_samples)
+    
+    if shuffle == True:
+      np.random.shuffle(indices)
+    
+    for start_idx in range(0, num_samples, batch_size):
+      end_idx = min(start_idx + batch_size, num_samples)
+      
+      if drop_last == True and end_idx - start_idx < batch_size:
+        break
+      
+      batch_indices = indices[start_idx:end_idx]
+      
+      yield X[:, batch_indices], y[:, batch_indices]
+ 
