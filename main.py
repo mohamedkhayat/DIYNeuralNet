@@ -1,6 +1,6 @@
 from utils import *
 from DeviceSelector import *
-from OOPNet import NeuralNetwork
+from Network import NeuralNetwork
 from Losses import BCELoss
 
 from Layers import Dense,Dropout
