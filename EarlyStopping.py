@@ -1,9 +1,9 @@
 from numpy import inf
 
-
 class EarlyStopping:
-  def __init__(self,patience):
+  def __init__(self,patience,delta):
     self.patience = patience
+    self.delta = delta
     self.counter = 0
     self.best_val_loss = inf
     self.current_epoch = 0
@@ -12,7 +12,7 @@ class EarlyStopping:
   def __call__(self,val_loss):
     self.current_epoch += 1
 
-    if(val_loss < self.best_val_loss):
+    if(val_loss < self.best_val_loss - self.delta):
       self.best_val_loss = val_loss
       self.counter = 0
       
