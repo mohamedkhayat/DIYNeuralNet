@@ -1,7 +1,7 @@
 from numpy import inf
 
 class EarlyStopping:
-  def __init__(self,patience,delta):
+  def __init__(self, patience, delta = 0):
     self.patience = patience
     self.delta = delta
     self.counter = 0
