@@ -46,26 +46,27 @@ if __name__ == "__main__":
     X, y = np.asarray(X), np.asarray(y)
 
   # split data into train and validation data
-
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = ratio)
 
+  # How Big/Small your weight updates are, essentially, how fast your model learns 
   learning_rate = 0.03
-
+  
+  # Initializing our Loss function, We use BCELoss because its a binary classification problem
   loss = BCELoss()
 
   layers = [
-    Dense(n_features, 64, 'he'),
-    ReLU(),
-    Dense(64, 64, 'he'),
-    ReLU(),
-    Dropout(keep_prob = 0.85),
-    Dense(64, 32, 'he'),
-    ReLU(),
-    Dense(32, 32, 'he'),
-    ReLU(),
-    Dropout(keep_prob = 0.85),
-    Dense(32, n_classes, 'glorot'),
-    Sigmoid()
+    Dense(n_features, 64, 'he'), # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
+    ReLU(), # ReLU Activation Function
+    Dense(64, 64, 'he'), # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
+    ReLU(), # ReLU again
+    Dropout(keep_prob = 0.9), # Dropout layer, turns off 10% of units
+    Dense(64, 32, 'he'), # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
+    ReLU(), # relu again
+    Dense(32, 32, 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
+    ReLU(), # relu again
+    Dropout(keep_prob = 0.9), # Dropout layer, turns off 10% of units
+    Dense(32, n_classes, 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
+    Sigmoid() # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
   ]
 
   model = NeuralNetwork(n_classes = n_classes, # Needed
@@ -76,12 +77,14 @@ if __name__ == "__main__":
 
   # Training the model for 300 iterations
 
-  History = model.fit(X_train = X_train,
-            y_train = y_train,
-            epochs = 10000,
-            validation_data = (X_test, y_test),
-            EarlyStopping_Patience = 10,
-            EarlyStoppingDelta = 0.001
+  History = model.fit(X_train = X_train, # Needed
+                      y_train = y_train, # Needed
+                      batch_size = 128, # Optional, defaults to 64
+                      epochs = 100, # Needed
+                      validation_data = (X_test, y_test), # Optional if you dont need plotting
+                      early_stopping_patience = 10, # Optional
+                      early_stopping_delta = 0.001 # Optional
+
             )
 
   # Print Time Elapsed and Device used to train
