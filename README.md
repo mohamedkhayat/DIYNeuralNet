@@ -129,7 +129,6 @@ dropout_rates = {2: 0.7, 3: 0.8, 4: 0.9}  # Gradually decreasing dropout
 - [ ] Add support for multi-class classification with categorical cross-entropy
 - [ ] Add support for regression tasks with MSE and RMSE loss functions
 - [ ] Add a UI
-- [ ] add Learning Rate Scheduling
 - [ ] Implement autograd engine
 - [ ] add Hyper paramater Tuning
 - [ ] Add More metrics
