@@ -3,6 +3,8 @@ import time
 from EarlyStopping import EarlyStopping
 from utils import create_mini_batches
 from Layers import Dropout,Dense
+from Activations import Softmax 
+from Losses import CrossEntropyLoss,BCELoss
 np = get_numpy()
 
 #import numpy as np
@@ -45,8 +47,11 @@ class NeuralNetwork():
     layers we need to multiply by their mask
     """
 
-    for layer in reversed(self.layers):
-      dA = layer.backward(dA)
+    for i,layer in reversed(list(enumerate(self.layers))):
+      if (isinstance(layer, Softmax) and isinstance(self.criterion, CrossEntropyLoss)):
+        dA = layer.backward(dA)
+      else:
+        dA = layer.backward(dA)
 
   def zero_grad(self):
     
@@ -83,10 +88,11 @@ class NeuralNetwork():
     for epoch in range(epochs):
 
       self.train()
-      epoch_loss = 0
-      epoch_train_accuracy = 0
+      epoch_loss = 0.0
+      #epoch_train_accuracy = 0
       num_batches = 0
-      
+      correct_predictions = 0
+      total_samples = 0
       mini_batches =  create_mini_batches(X_train,y_train, batch_size = batch_size,
                                           shuffle = shuffle, drop_last = True)
         
@@ -99,30 +105,50 @@ class NeuralNetwork():
         
         dA = self.criterion.backward(y_batch, y_pred)
 
-        self.backprop(dA)
-      
+        if isinstance(self.criterion, BCELoss):
+          y_pred_labels = (y_pred > 0.5).astype(int)
+          batch_correct = np.sum(y_pred_labels == y_batch)
+          self.backprop(dA)
+          
+        elif(isinstance(self.criterion, CrossEntropyLoss)):
+          y_pred_labels = np.argmax(y_pred, axis = 0)
+          y_true_labels = np.argmax(y_batch, axis=0)  
+          batch_correct = np.sum(y_pred_labels == y_true_labels)
+          self.backprop(y_batch)
+        
         self.optimize()
-      
-        y_pred_labels = (y_pred > 0.5).astype(int)
-        batch_accuracy = self.accuracy_score(y_pred_labels, y_batch)
-        epoch_train_accuracy += batch_accuracy
-
+        
+        correct_predictions += batch_correct
+        total_samples += y_batch.shape[1]
         num_batches += 1
-      
+        
       avg_train_loss =  epoch_loss / num_batches
-      avg_train_accuracy = epoch_train_accuracy / num_batches
-      train_losses.append(avg_train_loss.item())
-      train_accuracies.append(avg_train_accuracy.item())
+      avg_train_accuracy = correct_predictions / total_samples
+      
+      train_losses.append(float(avg_train_loss))
+      train_accuracies.append(float(avg_train_accuracy))
 
       if validation_data is not None:
         
         X_test, y_test = validation_data
-        test_loss, test_accuracy = self.evaluate(X_test, y_test, batch_size)
+        #test_loss, test_accuracy = self.evaluate(X_test, y_test, batch_size)
         
+        y_pred_test = self.forward(X_test, train = False)
+        test_loss = self.criterion(y_test, y_pred_test)
         test_losses.append(test_loss.tolist())
         
-        test_accuracies.append(test_accuracy.item())
-
+        
+        if isinstance(self.criterion, BCELoss):
+          y_pred_test_labels = (y_pred_test > 0.5).astype(int)
+          test_correct = np.sum(y_pred_test_labels == y_test)
+          
+        elif(isinstance(self.criterion, CrossEntropyLoss)):
+          y_pred_test_labels = np.argmax(y_pred_test, axis = 0)
+          y_test_labels = np.argmax(y_test, axis = 0)
+          test_correct = np.sum(y_test_labels == y_pred_test_labels)
+        
+        test_accuracy = test_correct / y_test.shape[1] 
+        test_accuracies.append(float(test_accuracy))
      
       if epoch % 10 == 0:
         print(f"Epoch : {epoch} : Loss : {float(test_loss):.4f}")
@@ -175,12 +201,19 @@ class NeuralNetwork():
       X = X.reshape(-1,1)
 
     predictions = self.forward(X)
-
-    return (predictions>0.5).astype(int)
+    if isinstance(self.criterion, BCELoss):
+      return (predictions>0.5).astype(int)
+    elif isinstance(self.criterion, CrossEntropyLoss):
+      return np.argmax(predictions, axis = 0)
+    else:
+      return predictions
   
   def accuracy_score(self,y_pred,y_true):
-    
-    correct = np.sum(y_pred == y_true,axis=1)
-    
+    if isinstance(self.criterion, CrossEntropyLoss):
+      y_pred = np.argmax(y_pred, axis = 0)
+      y_true= np.argmax(y_true, axis = 0)
+    elif isinstance(self.criterion, BCELoss):
+      y_pred = (y_pred > 0.5)
+    correct = np.sum(y_pred == y_true)
     return correct / y_true.shape[1]
 
