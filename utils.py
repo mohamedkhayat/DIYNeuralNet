@@ -1,9 +1,8 @@
-
 from random import randint
+from DeviceSelector import *
 np = get_numpy()
 import pathlib
 import matplotlib.pyplot as plt
-from DeviceSelector import *
 
 #import numpy as np
 def train_test_split(X,y,test_size=0.2):
@@ -32,7 +31,7 @@ def generate_xor_data(n_samples,np ,noise=0.01):
     X += np.random.normal(0, noise, X.shape)  # Add noise
     return X, y
   
-def plot_image(X,model,n_images,original_image_shape = (28,28)):
+def plot_image(X,model,n_images,original_image_shape = (28,28),n_classes=1):
 
   plt.figure(figsize=(6,6))
   
@@ -56,7 +55,11 @@ def plot_image(X,model,n_images,original_image_shape = (28,28)):
     
     test_example = test_example.reshape(HEIGHT,WIDTH) * 255.
     
-    plt.title("One" if test_pred.item() == 1 else "not a One")
+    if n_classes == 1:
+      plt.title("One" if test_pred.item() == 1 else "not a One")
+
+    else:
+      plt.title(str(test_pred.item()))
     
     plt.imshow(test_example,cmap='gray')
     plt.axis('off')
@@ -72,6 +75,25 @@ def load_binary_mnist():
   data = numpy.loadtxt(pathlib.Path('Data','balanced_mnist_1.csv'),delimiter=',',skiprows=1)
   X = data[:,1:].transpose()
   y = data[:,0].reshape(1,-1)
+  return np.asarray(X),np.asarray(y)
+
+def load_mnist():
+  data = numpy.loadtxt(pathlib.Path('digit-recognizer','train.csv'),delimiter=',',skiprows=1)
+
+  X = data[:,1:].T / 255.
+  y = data[:,0].reshape(1,-1)
+
+  y = y.flatten().astype(np.int64)
+
+  n_classes = len(np.unique(y))
+  n_samples = len(y)
+  
+  one_hot = np.zeros((n_classes, n_samples))
+  
+  one_hot[y,np.arange(n_samples)] = 1
+  
+  y = one_hot
+  
   return np.asarray(X),np.asarray(y)
 
 def plot_metrics(History):
