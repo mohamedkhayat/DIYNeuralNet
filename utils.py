@@ -74,7 +74,6 @@ def load_mnist():
   return np.asarray(X),np.asarray(y)
 
 def plot_metrics(History):
-  print("plot metrics was called ! ")
   try:
     train_accuracy = History['Train_accuracy']
     train_losses = History['Train_losses']
