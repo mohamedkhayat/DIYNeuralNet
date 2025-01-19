@@ -2,7 +2,7 @@ from DeviceSelector import *
 import time
 from EarlyStopping import EarlyStopping
 from utils import create_mini_batches
-
+from Layers import Dropout
 np = get_numpy()
 
 #import numpy as np
@@ -16,7 +16,7 @@ class NeuralNetwork():
     self.learning_rate = learning_rate
     self.criterion = criterion
     
-  def forward(self,X,train=True):
+  def forward(self,X,train=None):
     
     """
     dropout is a dict, with key being layer to implement dropout and value being the keep prob
@@ -25,8 +25,15 @@ class NeuralNetwork():
     this function is used to make a prediction yhat for an input x 
     """
     
+    if train is None:
+      train = self.training
+      
     output = X
     for layer in self.layers:
+      
+      if self.training == False and isinstance(layer,Dropout):
+        continue
+      
       output = layer.forward(output,train)
 
     return output
@@ -50,10 +57,8 @@ class NeuralNetwork():
         for param in layer.params:
           layer.params[param] -= self.learning_rate * layer.grads['d'+param]
 
-   
-    
   def fit(self, X_train, y_train, epochs = 30, 
-          batch_size = 64, validation_data = None, 
+          batch_size = 64, shuffle = True, validation_data = None, 
           early_stopping_patience = None, early_stopping_delta = 0):
     
     History = {}
@@ -71,13 +76,14 @@ class NeuralNetwork():
       er = EarlyStopping(early_stopping_patience,early_stopping_delta)
 
     for epoch in range(epochs):
-      
+
+      self.train()
       epoch_loss = 0
       epoch_train_accuracy = 0
       num_batches = 0
       
       mini_batches =  create_mini_batches(X_train,y_train, batch_size = batch_size,
-                                          shuffle = False, drop_last = True)
+                                          shuffle = shuffle, drop_last = True)
         
       for X_batch, y_batch in mini_batches:
 
@@ -106,20 +112,15 @@ class NeuralNetwork():
       if validation_data is not None:
         
         X_test, y_test = validation_data
-       
-        y_test_pred_prob = self.forward(X_test, train=False)     
-        
-        test_loss = self.criterion(y_test, y_test_pred_prob)      
+        test_loss, test_accuracy = self.evaluate(X_test, y_test, batch_size)
         
         test_losses.append(test_loss.tolist())
         
-        y_test_pred_labels = (y_test_pred_prob > 0.5).astype(int)
-        test_accuracy = self.accuracy_score(y_test_pred_labels, y_test)
         test_accuracies.append(test_accuracy.item())
 
      
       if epoch % 10 == 0:
-        print(f"Epoch : {epoch} : Loss : {float(loss):.4f}")
+        print(f"Epoch : {epoch} : Loss : {float(test_loss):.4f}")
 
       if early_stopping_patience is not None and er(test_loss):
         break
@@ -134,7 +135,35 @@ class NeuralNetwork():
                }
                
     return History
+  
+  def evaluate(self, X, y, batch_size=64):
+    self.eval()  
+    total_loss = 0
+    total_accuracy = 0
+    num_batches = 0
     
+    mini_batches = create_mini_batches(X, y, batch_size=batch_size,
+                                     shuffle=False, drop_last=False)
+    
+    for X_batch, y_batch in mini_batches:
+        y_pred = self.forward(X_batch)
+        loss = self.criterion(y_batch, y_pred)
+        total_loss += loss
+        
+        y_pred_labels = (y_pred > 0.5).astype(int)
+        batch_accuracy = self.accuracy_score(y_pred_labels, y_batch)
+        total_accuracy += batch_accuracy
+        num_batches += 1
+    
+    return total_loss / num_batches, total_accuracy / num_batches
+
+  
+  def train(self):
+    self.training = True
+    
+  def eval(self):
+    self.training = False
+  
   def predict(self,X):
 
     if(len(X.shape) == 1):
