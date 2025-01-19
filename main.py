@@ -1,10 +1,10 @@
 from utils import *
 from DeviceSelector import *
 from Network import NeuralNetwork
-from Losses import BCELoss
+from Losses import BCELoss,CrossEntropyLoss
 
 from Layers import Dense,Dropout
-from Activations import ReLU,Sigmoid
+from Activations import ReLU,Sigmoid,Softmax
 
 np = get_numpy()
 #import numpy as np
@@ -18,7 +18,7 @@ np.random.seed(42)
 # Loading Mnist data
 if __name__ == "__main__":
   try:
-    X, y = load_mnist()
+    X, y = load_binary_mnist()
     
   except:
     
@@ -26,9 +26,19 @@ if __name__ == "__main__":
     
     n_samples = 2000
     X, y = generate_xor_data(n_samples, np)
-
-  # Extracting n_features and n_classes from X and y
-
+  
+  print(y.shape)
+  """
+  y = y.flatten()
+  n_samples = len(y)
+  # Initialize the output array
+  #one_hot = np.zeros((2, n_samples))
+  
+  # Set the appropriate indices to 1
+  one_hot[0, y == 0] = 1  # First row for class 0
+  one_hot[1, y == 1] = 1  # Second row for class 1 
+  y = one_hot
+  """
   n_features = X.shape[0]
   n_classes = y.shape[0]
 
@@ -46,10 +56,11 @@ if __name__ == "__main__":
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = ratio)
 
   # How Big/Small your weight updates are, essentially, how fast your model learns 
-  learning_rate = 0.03
+  learning_rate = 0.3
   
   # Initializing our Loss function, We use BCELoss because its a binary classification problem
   loss = BCELoss()
+  #loss =  CrossEntropyLoss()
 
   layers = [
     Dense(input_size = n_features, output_size = 64, initializer = 'he'), # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
@@ -64,15 +75,16 @@ if __name__ == "__main__":
     Dropout(keep_prob = 0.8), # Dropout layer, turns off 10% of units
     Dense(input_size = 32, output_size = n_classes, initializer = 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
     Sigmoid() # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
+    #Softmax() # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
   ]
 
-  model = NeuralNetwork(n_classes = n_classes, # Needed
+  model = NeuralNetwork(n_classes = n_classes , # Needed
                         layers = layers, # Needed
                         learning_rate = learning_rate, # Needed
                         criterion = loss, # Needed
                         )
 
-  # Training the model for 300 iterations
+  # Training the model for 100 epochs
 
   History = model.fit(X_train = X_train, # Needed
                       y_train = y_train, # Needed
@@ -80,7 +92,7 @@ if __name__ == "__main__":
                       shuffle = True, # Optional, defaults to True
                       epochs = 100, # Needed
                       validation_data = (X_test, y_test), # Optional if you dont need plotting
-                      early_stopping_patience = 15, # Optional
+                      early_stopping_patience = None, #15, # Optional
                       early_stopping_delta = 0.001 # Optional
             )
 

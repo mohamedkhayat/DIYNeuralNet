@@ -63,7 +63,7 @@ def plot_image(X,model,n_images,original_image_shape = (28,28)):
   plt.tight_layout()
   plt.show()
 
-def load_mnist():
+def load_binary_mnist():
   """
   Loads a transformed mnist dataset, Only keeping labels 0 and 1 for binary classification,
   and using under sampling for the dataset to be balanded

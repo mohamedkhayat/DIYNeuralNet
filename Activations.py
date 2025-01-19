@@ -42,4 +42,20 @@ class Sigmoid(Activation):
   def backward(self,dA):
     return (self.output * (1 - self.output)) * dA
 
+class Softmax(Activation):
+  def __init__(self):
+    super().__init__()
 
+  def forward(self,Z,train=True):
+    numerator = np.exp(Z - np.max(Z, axis=0, keepdims = True))
+    probabilities = numerator / np.sum(numerator, axis = 0, keepdims = True)
+
+    if train == True:
+      self.output = probabilities
+
+    return probabilities
+
+  def backward(self,y):
+    batch_size = y.shape[1]
+    self.dZ = (self.output - y) / batch_size
+    return self.dZ
