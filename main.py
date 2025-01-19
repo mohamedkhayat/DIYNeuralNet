@@ -1,3 +1,4 @@
+np = get_numpy()
 from utils import *
 from DeviceSelector import *
 from Network import NeuralNetwork
@@ -5,9 +6,6 @@ from Losses import BCELoss,CrossEntropyLoss
 
 from Layers import Dense,Dropout
 from Activations import ReLU,Sigmoid,Softmax
-
-np = get_numpy()
-#import numpy as np
 
 _GPU_AVAILABLE = is_gpu_available()
 
@@ -27,7 +25,6 @@ if __name__ == "__main__":
     n_samples = 2000
     X, y = generate_xor_data(n_samples, np)
   
-  print(y.shape)
   """
   y = y.flatten()
   n_samples = len(y)

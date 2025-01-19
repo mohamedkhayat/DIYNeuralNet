@@ -1,6 +1,6 @@
-from DeviceSelector import *
 from abc import ABC,abstractmethod
 np = get_numpy()
+from DeviceSelector import *
 class Layer(ABC):
   def __init__(self):
     self.input = None

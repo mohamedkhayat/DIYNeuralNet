@@ -1,8 +1,9 @@
-from DeviceSelector import *
-import pathlib
-import matplotlib.pyplot as plt
+
 from random import randint
 np = get_numpy()
+import pathlib
+import matplotlib.pyplot as plt
+from DeviceSelector import *
 
 #import numpy as np
 def train_test_split(X,y,test_size=0.2):

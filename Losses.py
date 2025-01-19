@@ -1,6 +1,6 @@
-from DeviceSelector import *
 from abc import ABC,abstractmethod
 np = get_numpy()
+from DeviceSelector import *
 
 """
 def binary_cross_entropy(yhat,y,weights=None,lamb=None):

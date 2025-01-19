@@ -1,13 +1,12 @@
-from DeviceSelector import *
 import time
+np = get_numpy()
+from DeviceSelector import *
 from EarlyStopping import EarlyStopping
 from utils import create_mini_batches
 from Layers import Dropout,Dense
 from Activations import Softmax 
 from Losses import CrossEntropyLoss,BCELoss
-np = get_numpy()
 
-#import numpy as np
 class NeuralNetwork():
   
   def __init__(self, n_classes, layers, learning_rate,
@@ -87,17 +86,19 @@ class NeuralNetwork():
 
     for epoch in range(epochs):
 
-      self.train()
       epoch_loss = 0.0
-      #epoch_train_accuracy = 0
       num_batches = 0
       correct_predictions = 0
       total_samples = 0
+
+      self.train()
+     
       mini_batches =  create_mini_batches(X_train,y_train, batch_size = batch_size,
                                           shuffle = shuffle, drop_last = True)
         
       for X_batch, y_batch in mini_batches:
         self.zero_grad()
+        
         y_pred = self.forward(X_batch, train=True)      
         
         loss = self.criterion(y_batch, y_pred)
@@ -108,12 +109,15 @@ class NeuralNetwork():
         if isinstance(self.criterion, BCELoss):
           y_pred_labels = (y_pred > 0.5).astype(int)
           batch_correct = np.sum(y_pred_labels == y_batch)
+          
           self.backprop(dA)
           
         elif(isinstance(self.criterion, CrossEntropyLoss)):
           y_pred_labels = np.argmax(y_pred, axis = 0)
           y_true_labels = np.argmax(y_batch, axis=0)  
+          
           batch_correct = np.sum(y_pred_labels == y_true_labels)
+          
           self.backprop(y_batch)
         
         self.optimize()
@@ -131,9 +135,9 @@ class NeuralNetwork():
       if validation_data is not None:
         
         X_test, y_test = validation_data
-        #test_loss, test_accuracy = self.evaluate(X_test, y_test, batch_size)
         
         y_pred_test = self.forward(X_test, train = False)
+        
         test_loss = self.criterion(y_test, y_pred_test)
         test_losses.append(test_loss.tolist())
         
@@ -145,6 +149,7 @@ class NeuralNetwork():
         elif(isinstance(self.criterion, CrossEntropyLoss)):
           y_pred_test_labels = np.argmax(y_pred_test, axis = 0)
           y_test_labels = np.argmax(y_test, axis = 0)
+          
           test_correct = np.sum(y_test_labels == y_pred_test_labels)
         
         test_accuracy = test_correct / y_test.shape[1] 
@@ -166,7 +171,8 @@ class NeuralNetwork():
                }
                
     return History
-  
+
+  """
   def evaluate(self, X, y, batch_size=64):
     self.eval()  
     total_loss = 0
@@ -187,7 +193,7 @@ class NeuralNetwork():
         num_batches += 1
     
     return total_loss / num_batches, total_accuracy / num_batches
-
+  """
   
   def train(self):
     self.training = True
@@ -201,19 +207,25 @@ class NeuralNetwork():
       X = X.reshape(-1,1)
 
     predictions = self.forward(X)
+    
     if isinstance(self.criterion, BCELoss):
       return (predictions>0.5).astype(int)
+      
     elif isinstance(self.criterion, CrossEntropyLoss):
       return np.argmax(predictions, axis = 0)
+
     else:
       return predictions
   
   def accuracy_score(self,y_pred,y_true):
+    
     if isinstance(self.criterion, CrossEntropyLoss):
       y_pred = np.argmax(y_pred, axis = 0)
       y_true= np.argmax(y_true, axis = 0)
+
     elif isinstance(self.criterion, BCELoss):
       y_pred = (y_pred > 0.5)
+
     correct = np.sum(y_pred == y_true)
     return correct / y_true.shape[1]
 
