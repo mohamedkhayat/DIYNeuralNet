@@ -29,9 +29,6 @@ if __name__ == "__main__":
 
   # Extracting n_features and n_classes from X and y
 
-
-  print(f"Shape of X : {X.shape}")
-
   n_features = X.shape[0]
   n_classes = y.shape[0]
 
@@ -59,12 +56,12 @@ if __name__ == "__main__":
     ReLU(), # ReLU Activation Function
     Dense(64, 64, 'he'), # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
     ReLU(), # ReLU again
-    Dropout(keep_prob = 0.9), # Dropout layer, turns off 10% of units
+    Dropout(keep_prob = 0.8), # Dropout layer, turns off 10% of units
     Dense(64, 32, 'he'), # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
     ReLU(), # relu again
     Dense(32, 32, 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
     ReLU(), # relu again
-    Dropout(keep_prob = 0.9), # Dropout layer, turns off 10% of units
+    Dropout(keep_prob = 0.8), # Dropout layer, turns off 10% of units
     Dense(32, n_classes, 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
     Sigmoid() # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
   ]
@@ -79,12 +76,12 @@ if __name__ == "__main__":
 
   History = model.fit(X_train = X_train, # Needed
                       y_train = y_train, # Needed
-                      batch_size = 128, # Optional, defaults to 64
+                      batch_size = 64*8, # Optional, defaults to 64
+                      shuffle = True, # Optional, defaults to True
                       epochs = 100, # Needed
                       validation_data = (X_test, y_test), # Optional if you dont need plotting
-                      early_stopping_patience = 10, # Optional
+                      early_stopping_patience = 15, # Optional
                       early_stopping_delta = 0.001 # Optional
-
             )
 
   # Print Time Elapsed and Device used to train

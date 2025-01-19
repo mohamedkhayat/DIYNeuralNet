@@ -2,7 +2,7 @@ from DeviceSelector import *
 import time
 from EarlyStopping import EarlyStopping
 from utils import create_mini_batches
-from Layers import Dropout
+from Layers import Dropout,Dense
 np = get_numpy()
 
 #import numpy as np
@@ -48,7 +48,12 @@ class NeuralNetwork():
     for layer in reversed(self.layers):
       dA = layer.backward(dA)
 
-
+  def zero_grad(self):
+    
+    for layer in self.layers:
+      if isinstance(layer,Dense):
+        layer.zero_grad()
+      
   def optimize(self):
     
     for layer in self.layers:
@@ -86,7 +91,7 @@ class NeuralNetwork():
                                           shuffle = shuffle, drop_last = True)
         
       for X_batch, y_batch in mini_batches:
-
+        self.zero_grad()
         y_pred = self.forward(X_batch, train=True)      
         
         loss = self.criterion(y_batch, y_pred)

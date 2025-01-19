@@ -48,6 +48,10 @@ class Dense(Layer):
     dA_prev = (self.params['W'].T @ dZ)
     return dA_prev
 
+  def zero_grad(self):
+    self.grads['dW'] = np.zeros_like(self.params['W'])
+    self.grads['db'] = np.zeros_like(self.params['b'])
+
   def get_params(self):
     return self.params
  
