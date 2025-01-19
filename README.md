@@ -25,7 +25,7 @@ A pure NumPy/CuPy implementation of a deep neural network with modern features i
 ### Create and activate a Conda environment
 
 ```bash
-conda create -n neuralnet python=3.8 
+conda create -n neuralnet python=3.8.20
 conda activate neuralnet
 ```
 
