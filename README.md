@@ -38,8 +38,9 @@ pip install -r requirements.txt
 ### Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/neural-network.git
-cd neural-network
+git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
+cd DIYNeuralNet
+python main.py
 ```
 
 ---
