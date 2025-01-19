@@ -78,7 +78,7 @@ def load_binary_mnist():
   return np.asarray(X),np.asarray(y)
 
 def load_mnist():
-  data = numpy.loadtxt(pathlib.Path('digit-recognizer','train.csv'),delimiter=',',skiprows=1)
+  data = numpy.loadtxt(pathlib.Path('Data','train.csv'),delimiter=',',skiprows=1)
 
   X = data[:,1:].T / 255.
   y = data[:,0].reshape(1,-1)

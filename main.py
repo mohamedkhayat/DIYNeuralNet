@@ -12,6 +12,7 @@ _GPU_AVAILABLE = is_gpu_available()
 # Setting random seed for reproducibility
 
 np.random.seed(42)
+
 problem = 2
 # Loading Mnist data
 if __name__ == "__main__":
