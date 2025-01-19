@@ -52,17 +52,17 @@ if __name__ == "__main__":
   loss = BCELoss()
 
   layers = [
-    Dense(n_features, 64, 'he'), # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
+    Dense(input_size = n_features, output_size = 64, initializer = 'he'), # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
     ReLU(), # ReLU Activation Function
-    Dense(64, 64, 'he'), # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
+    Dense(input_size = 64, output_size = 64, initializer = 'he'), # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
     ReLU(), # ReLU again
     Dropout(keep_prob = 0.8), # Dropout layer, turns off 10% of units
-    Dense(64, 32, 'he'), # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
+    Dense(input_size = 64, output_size = 32, initializer = 'he'), # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
     ReLU(), # relu again
-    Dense(32, 32, 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
+    Dense(input_size = 32, output_size = 32, initializer = 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
     ReLU(), # relu again
     Dropout(keep_prob = 0.8), # Dropout layer, turns off 10% of units
-    Dense(32, n_classes, 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
+    Dense(input_size = 32, output_size = n_classes, initializer = 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
     Sigmoid() # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
   ]
 

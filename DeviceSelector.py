@@ -1,6 +1,5 @@
 import os
 import numpy
-import cupy
 _GPU_AVAILABLE = False
 
 try:
@@ -9,6 +8,7 @@ try:
   if "NVIDIA-SMI" in output:
     try:
       _GPU_AVAILABLE = bool(cupy.cuda.runtime.getDeviceCount())
+      import cupy
       np = cupy
       
     except Exception as e:
