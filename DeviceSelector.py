@@ -7,11 +7,12 @@ try:
   
   if "NVIDIA-SMI" in output:
     try:
-      _GPU_AVAILABLE = bool(cupy.cuda.runtime.getDeviceCount())
       import cupy
+      _GPU_AVAILABLE = bool(cupy.cuda.runtime.getDeviceCount())
       np = cupy
       
     except Exception as e:
+      print(e)
       np = numpy
 
   else:
@@ -19,6 +20,7 @@ try:
 
 except Exception as e:
   np = numpy
+  print(e)
   
 def get_numpy():
   """

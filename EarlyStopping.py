@@ -20,7 +20,7 @@ class EarlyStopping:
       self.counter += 1
 
     if(self.counter >= self.patience):
-      print(f"Early stopping triggered during epoch : {self.current_epoch}\nbest val_loss = {self.best_val_loss.item():.4f}")
+      print(f"Early stopping triggered during epoch : {self.current_epoch}\nbest val_loss = {self.best_val_loss:.4f}")
       self.done = True
     
     return self.done   

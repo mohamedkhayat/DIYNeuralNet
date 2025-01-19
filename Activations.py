@@ -1,6 +1,6 @@
 from abc import ABC,abstractmethod
-np = get_numpy()
 from DeviceSelector import *
+np = get_numpy()
 from Layers import Layer
 
 class Activation(ABC):
