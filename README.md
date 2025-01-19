@@ -1,6 +1,6 @@
 # Neural Network Implementation from Scratch
 
-A pure NumPy/CuPy implementation of a deep neural network with modern features including dropout regularization, batch normalization, and He initialization. This project is designed to demonstrate how deep learning models work under the hood, offering both flexibility and performance.
+A pure NumPy/CuPy implementation of a deep neural network with modern features including dropout regularization, mini batch gradient descent, and He/Glorot initialization. This project is designed to demonstrate how deep learning models work under the hood, offering both flexibility and performance.
 
 ## Features
 
