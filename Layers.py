@@ -1,6 +1,7 @@
 from abc import ABC,abstractmethod
 from DeviceSelector import *
 np = get_numpy()
+from InputValidation import InputValidator
 class Layer(ABC):
   def __init__(self):
     self.input = None
@@ -18,8 +19,8 @@ class Dense(Layer):
   def __init__(self,input_size,output_size,initializer='he'):
     super().__init__()
 
-    self.input_size = input_size
-    self.output_size = output_size
+    self.input_size = InputValidator.validate_number_units(input_size)
+    self.output_size = InputValidator.validate_number_units(output_size)
 
     self.params['W'] = np.random.randn(output_size, input_size)
 
@@ -66,17 +67,18 @@ class Dropout(Layer):
   
   def __init__(self,keep_prob):
     super().__init__()
-    self.keep_prob = keep_prob
+    self.keep_prob = InputValidator.validate_keep_prob(keep_prob)
     self.mask = None
     
   def forward(self,A,train=True):
-    mask = (np.random.rand(A.shape[0],A.shape[1]) < self.keep_prob).astype(float)
     
     if train == True:
+      self.mask = (np.random.rand(A.shape[0],A.shape[1]) < self.keep_prob).astype(float)
+      A = A * self.mask / self.keep_prob
 
-      self.mask = mask
-      A = A * mask / self.keep_prob
-      
+    else:
+      self.mask = None
+
     return A 
 
   def backward(self,dA):

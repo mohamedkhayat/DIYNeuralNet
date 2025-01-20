@@ -1,6 +1,3 @@
-from Layers import Layer,Dropout
-from Activations import Activation
-from Losses import Loss
 
 class InputValidator:
   
@@ -16,6 +13,8 @@ class InputValidator:
   
   @staticmethod
   def validate_layers(layers):
+    from Layers import Layer,Dropout
+    from Activations import Activation
     if not isinstance(layers,(list,tuple)) or len(layers) < 1:
       raise TypeError("Layers needs to be a non empty list or a tuple")
     
@@ -41,11 +40,28 @@ class InputValidator:
 
   @staticmethod
   def validate_criterion(criterion):
+    from Losses import Loss
     if not isinstance(criterion,Loss):
       raise ValueError("Loss used must be a valid Loss")
     
     return criterion
     
   @staticmethod
-  def validate_():
-    pass
+  def validate_keep_prob(keep_prob):
+    if not isinstance(keep_prob, (int,float)):
+      raise TypeError("keep prob should be an int or a float")
+    
+    if keep_prob <= 0 or keep_prob > 1:
+      raise ValueError("keep_prob needs to be between 0 exclusive and 1 inclusive")
+
+    return keep_prob
+
+  @staticmethod
+  def validate_number_units(number_of_units):
+    if not isinstance(number_of_units, int):
+      raise TypeError("Number of units needs to be an int")
+    
+    if number_of_units <= 0:
+      raise ValueError("Number of units needs to greater than 0")
+    
+    return number_of_units
