@@ -1,6 +1,8 @@
 # Neural Network Implementation from Scratch
 
-A pure NumPy/CuPy implementation of a deep neural network with modern features including dropout regularization, mini batch gradient descent, and He/Glorot initialization. This project is designed to demonstrate how deep learning models work under the hood, offering both flexibility and performance.
+A pure NumPy/CuPy implementation of a deep neural network with modern features including dropout regularization, mini-batch gradient descent, and He/Glorot initialization. This project is designed to demonstrate how deep learning models work under the hood, offering both flexibility and performance.
+
+---
 
 ## Features
 
@@ -14,6 +16,10 @@ A pure NumPy/CuPy implementation of a deep neural network with modern features i
   - Mini-batch gradient descent for efficient training.
   - Early stopping to prevent overfitting.
   - CUDA support via CuPy for GPU acceleration.
+- **Task Support**:
+  - **Binary Classification**: Sigmoid activation with Binary Cross-Entropy Loss (BCELoss).
+  - **Multi-Class Classification**: Softmax activation with Cross-Entropy Loss.
+  - **Regression**: Mean Squared Error (MSE) Loss (ongoing development).
 - **Visualizations**:
   - Loss and accuracy curves for training and validation.
   - Training time and device usage statistics.
@@ -52,8 +58,8 @@ python main.py
 ```python
 from Network import NeuralNetwork
 from Layers import Dense, Dropout
-from Activations import ReLU, Sigmoid
-from Losses import BCELoss
+from Activations import ReLU, Sigmoid, Softmax
+from Losses import BCELoss, CrossEntropyLoss, MSELoss
 from Utils import *  # Import all utility functions
 from DeviceSelector import *  # For selecting CPU/GPU device
 np = get_numpy()
@@ -74,7 +80,7 @@ layers = [
     ReLU(),
     Dropout(keep_prob=0.8),  # Dropout layer
     Dense(input_size=32, output_size=n_classes, initializer='glorot'),  # Output layer with Glorot initialization
-    Sigmoid()  # Sigmoid activation for binary classification
+    Softmax()  # Softmax activation for multi-class classification
 ]
 ```
 
@@ -82,10 +88,10 @@ layers = [
 
 ```python
 model = NeuralNetwork(
-    n_classes=1,  # Binary classification
+    n_classes=n_classes,  # Number of classes for classification
     layers=layers,
     learning_rate=0.01,
-    criterion=BCELoss()
+    criterion=CrossEntropyLoss()  # Use BCELoss for binary classification or MSELoss for regression
 )
 ```
 
@@ -105,28 +111,40 @@ history = model.fit(
 5. **Plot Metrics**:
 
 ```python
-plot_metrics(History)
+plot_metrics(history)
 ```
 
 ---
 
 ## Future Improvements
 
-This implementation lays the groundwork for a fully functional neural network framework. Potential future enhancements include:
+This implementation lays the groundwork for a fully functional neural network framework. Here's what's already implemented and what's coming next:
 
-1. **Additional Features**:
-   - Support for multi-class classification with softmax activation and regression.
-   - Implementation of L2 regularization.
-   - Adding support for optimizers like Adam, RMSprop, and SGD with momentum.
-   - Adding other activation functions
-2. **Advanced Layers**:
+### **Implemented Features**:
+- **Binary Classification**: Sigmoid activation with Binary Cross-Entropy Loss (BCELoss).
+- **Multi-Class Classification**: Softmax activation with Cross-Entropy Loss.
+- **Regression**: Mean Squared Error (MSE) Loss (ongoing development).
+- **Advanced Features**: Dropout, He/Glorot initialization, mini-batch gradient descent, and early stopping.
+- **Visualizations**: Loss and accuracy curves, training time, and device usage statistics.
+
+### **Planned Features**:
+1. **Additional Loss Functions**:
+   - Support for more regression loss functions (e.g., Mean Absolute Error, Huber Loss).
+2. **Optimizers**:
+   - Implementation of advanced optimizers like Adam, RMSprop, and SGD with momentum.
+3. **Regularization**:
+   - L2 regularization to prevent overfitting.
+4. **Advanced Layers**:
    - Batch normalization for faster and more stable training.
    - Convolutional layers for image-based tasks.
-3. **Improved Usability**:
+5. **Improved Usability**:
    - Save and load functionality for model parameters.
    - Detailed logging and visualization dashboards.
 
 This roadmap ensures the project remains a valuable learning resource while gradually evolving into a robust deep learning library.
 
+---
 
+## License
 
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
