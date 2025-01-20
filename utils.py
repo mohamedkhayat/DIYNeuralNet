@@ -4,12 +4,9 @@ np = get_numpy()
 import pathlib
 import matplotlib.pyplot as plt
 
-#import numpy as np
+np.random.seed(42)
+
 def train_test_split(X,y,test_size=0.2):
-  """
-  Takes in matrices X (features) and y (target),and test size, which represents ratio of data to be used
-  for evaluation, and returns X_train,X_test,y_train,y_test split according to the ratio specified 
-  """
   m = X.shape[1]
   
   indices = np.random.permutation(m)
@@ -25,12 +22,27 @@ def train_test_split(X,y,test_size=0.2):
   return X_train,X_test,y_train,y_test
   
 def generate_xor_data(n_samples,np ,noise=0.01):
-    """Generates XOR-like data."""
     X = np.random.rand(2, n_samples) * 2 - 1  # Centered around 0
     y = np.logical_xor(X[0, :] > 0, X[1, :] > 0).astype(int).reshape(1, -1)
     X += np.random.normal(0, noise, X.shape)  # Add noise
     return X, y
+ 
+def generate_regression_data(n_samples=1000, n_features=1, noise=0.1, np=np):
+    # Generate random features
+    X = np.random.randn(n_features, n_samples)
+    
+    # Generate weights (1 to n_features)
+    weights = np.arange(1, n_features + 1).reshape(-1, 1)
+    
+    # Calculate y = w1*x1 + w2*x2 + ... + wn*xn
+    y = np.sum(weights * X, axis=0, keepdims=True)
+    
+    # Add noise
+    y += noise * np.random.randn(1, n_samples)
+    
+    return X, y
   
+   
 def plot_image(X,model,n_images,original_image_shape = (28,28),n_classes=1):
 
   plt.figure(figsize=(6,6))
@@ -68,10 +80,6 @@ def plot_image(X,model,n_images,original_image_shape = (28,28),n_classes=1):
   plt.show()
 
 def load_binary_mnist():
-  """
-  Loads a transformed mnist dataset, Only keeping labels 0 and 1 for binary classification,
-  and using under sampling for the dataset to be balanded
-  """
   data = numpy.loadtxt(pathlib.Path('Data','balanced_mnist_1.csv'),delimiter=',',skiprows=1)
   X = data[:,1:].transpose()
   y = data[:,0].reshape(1,-1)
@@ -79,7 +87,7 @@ def load_binary_mnist():
 
 def load_mnist():
   data = numpy.loadtxt(pathlib.Path('Data','train.csv'),delimiter=',',skiprows=1)
-
+    
   X = data[:,1:].T / 255.
   y = data[:,0].reshape(1,-1)
 
