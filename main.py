@@ -17,10 +17,10 @@ np.random.seed(42)
 # 2 for multi class classification on mnist
 # 3 for regression, not yet implemented
 
-problem = 2
+problem = 3
 # Loading Mnist data
 if __name__ == "__main__":
-
+  #need to make all of this a function 
   try:
 
     if problem == 3:
@@ -76,25 +76,27 @@ if __name__ == "__main__":
     Dense(input_size = 32, output_size = 32, initializer = 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
     ReLU(), # relu again
     Dropout(keep_prob = 0.95), # Dropout layer, turns off 10% of unitS
-    Dense(input_size = 32, output_size = n_classes, initializer = 'he'),#'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
   ]
   
   if problem == 1:
     learning_rate = 0.03
     loss = BCELoss()
-    
+
+    layers.append(Dense(input_size = 32, output_size = n_classes, initializer = 'glorot'))# Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
     layers.append(Sigmoid())
     
   elif problem == 2:
     learning_rate = 0.8
     loss = CrossEntropyLoss()
 
+    layers.append(Dense(input_size = 32, output_size = n_classes, initializer = 'glorot'))# Output layer, input size = 32, output size = n_classes (multiple), glorot init because it uses softmax
     layers.append(Softmax())
     
   else:     
-    learning_rate = 0.03
+    learning_rate = 0.0003
     loss = MSELoss()
 
+    layers.append(Dense(input_size = 32, output_size = n_classes, initializer = 'random'))# Output layer, input size = 32, output size = n_classes (1), random init because it uses no activation function
 
   model = NeuralNetwork(n_classes = n_classes , # Needed
                         layers = layers, # Needed
@@ -102,7 +104,7 @@ if __name__ == "__main__":
                         criterion = loss, # Needed
                         )
 
-  # Training the model for 100 epochs
+  # Training the model
   print("starting training")
 
   History = model.fit(X_train = X_train, # Needed
