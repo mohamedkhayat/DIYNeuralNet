@@ -43,14 +43,19 @@ class Dense(Layer):
   def forward(self,X,train=True):
     if train:
       self.input = X
+
     z = self.params['W'] @ X + self.params['b']    
+
     return z
 
   def backward(self,dZ):
     batch_size = self.input.shape[1]
+
     self.grads['dW'] = dZ @ self.input.T / batch_size
     self.grads['db'] = np.sum(dZ, axis=1, keepdims=True) / batch_size
+    
     dA_prev = (self.params['W'].T @ dZ)
+
     return dA_prev
 
   def zero_grad(self):

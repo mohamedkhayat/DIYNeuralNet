@@ -22,6 +22,7 @@ class ReLU(Activation):
   def forward(self,Z,train=True):
     if train:
       self.input = Z
+
     return np.maximum(0,Z)
 
   def backward(self,dA):
@@ -36,6 +37,7 @@ class Sigmoid(Activation):
     if train:
       self.input = Z
       self.output = output
+
     return output
 
   def backward(self,dA):

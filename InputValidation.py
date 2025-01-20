@@ -93,7 +93,7 @@ class InputValidator:
     if not (type(a) == type(b)):
       raise TypeError("paramater 1 and 2 are two different types, they need to be of same type")
     
-    if not (a.shape == b.shape):
+    if a.shape != b.shape:
       raise ValueError("paramater 1 and 2's shapes do not match")
     
     return a,b
