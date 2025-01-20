@@ -31,8 +31,8 @@ class Dense(Layer):
 
       limit = np.sqrt(6) / (np.sqrt(input_size + output_size))
       self.params['W'] = np.random.uniform(-limit, limit, size=(output_size,input_size))
-
-    else:
+    
+    elif (initializer != 'random'):
       print("Not a valid Initialization method, using random init")     
 
     self.params["b"] = np.zeros((output_size, 1))
