@@ -2,7 +2,7 @@ from DeviceSelector import *
 np = get_numpy()
 from utils import *
 from Network import NeuralNetwork
-from Losses import BCELoss,CrossEntropyLoss
+from Losses import BCELoss,CrossEntropyLoss,MSELoss
 from Layers import Dense,Dropout
 from Activations import ReLU,Sigmoid,Softmax
 
@@ -13,21 +13,32 @@ _GPU_AVAILABLE = is_gpu_available()
 np.random.seed(42)
 
 # type of problem :
-# 1 for multi class classification on mnist
-# 2 for binary classification on a modified version of mnist 
+# 1 for binary classification on a modified version of mnist 
+# 2 for multi class classification on mnist
 # 3 for regression, not yet implemented
 
-problem = 2
+problem = 3
 # Loading Mnist data
 if __name__ == "__main__":
   try:
-    if problem == 2:
+    if problem == 3:
+      print("loading data : Regression Data")
+      n_samples = 30000
+      n_features = 1
+      X, y = generate_regression_data(n_samples = n_samples,
+                                      n_features = n_features,
+                                      noise=0.005,
+                                      np = np)
+    
+    elif problem == 2:
       print("loading data : MNIST")
       X, y = load_mnist()
+
     else:
       print("loading data : binary MNIST")
       X, y = load_binary_mnist()
       problem = 1
+
   except Exception as e:
     print(e)
     #Falling back to generating XOR in case of errors
@@ -62,12 +73,16 @@ if __name__ == "__main__":
     loss = BCELoss()
     final_layer = Sigmoid()
     
-  else:
+  elif problem == 2:
     
     learning_rate = 0.8
     
     loss = CrossEntropyLoss()
     final_layer = Softmax()
+    
+  else:     
+    learning_rate = 0.03
+    loss = MSELoss()
 
   layers = [
     Dense(input_size = n_features, output_size = 64, initializer = 'he'), # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
@@ -80,8 +95,8 @@ if __name__ == "__main__":
     Dense(input_size = 32, output_size = 32, initializer = 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
     ReLU(), # relu again
     Dropout(keep_prob = 0.95), # Dropout layer, turns off 10% of unitS
-    Dense(input_size = 32, output_size = n_classes, initializer = 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
-    final_layer# Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
+    Dense(input_size = 32, output_size = n_classes, initializer = 'he'),#'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
+    #final_layer# Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
      # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
   ]
 
@@ -100,7 +115,7 @@ if __name__ == "__main__":
                       shuffle = True, # Optional, defaults to True
                       epochs = 200, # Needed
                       validation_data = (X_test, y_test), # Optional if you dont need plotting
-                      early_stopping_patience = 15, #15, # Optional
+                      early_stopping_patience = 15, # Optional
                       early_stopping_delta = 0.001 # Optional
             )
 
@@ -110,23 +125,25 @@ if __name__ == "__main__":
 
   plot_metrics(History)
 
-  # using the model to make predictions on the train set
+  if problem != 3:
+    # using the model to make predictions on the train set
 
-  y_pred_train = model.predict(X_train)
+    y_pred_train = model.predict(X_train)
 
-  # using predictions to calculate model's accuracy on the train set
+    # using predictions to calculate model's accuracy on the train set
 
-  train_accuracy = model.accuracy_score(y_pred_train, y_train)
-  print(f"Train Accuracy : {float(train_accuracy):.4f}")
+    train_accuracy = model.accuracy_score(y_pred_train, y_train)
+    print(f"Train Accuracy : {float(train_accuracy):.4f}")
 
-  # using the model to make predictions on the test set 
+    # using the model to make predictions on the test set 
 
-  y_pred_test = model.predict(X_test)
+    y_pred_test = model.predict(X_test)
 
-  # using predictions to calculate model's accuracy on the test set
+    # using predictions to calculate model's accuracy on the test set
 
-  test_accuracy = model.accuracy_score(y_pred_test, y_test)
-  print(f"Test Accuracy : {float(test_accuracy):.4f}")
+    test_accuracy = model.accuracy_score(y_pred_test, y_test)
+    print(f"Test Accuracy : {float(test_accuracy):.4f}")
 
-  #Plotting random n_images from the test set with their predictions
-  plot_image(X = X_test, model = model, n_images = 6, original_image_shape = (28, 28), n_classes = n_classes)
+
+    #Plotting random n_images from the test set with their predictions
+    plot_image(X = X_test, model = model, n_images = 6, original_image_shape = (28, 28), n_classes = n_classes)
