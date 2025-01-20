@@ -17,10 +17,12 @@ np.random.seed(42)
 # 2 for multi class classification on mnist
 # 3 for regression, not yet implemented
 
-problem = 3
+problem = 2
 # Loading Mnist data
 if __name__ == "__main__":
+
   try:
+
     if problem == 3:
       print("loading data : Regression Data")
       n_samples = 30000
@@ -62,28 +64,7 @@ if __name__ == "__main__":
   # split data into train and validation data
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = ratio)
 
-  # How Big/Small your weight updates are, essentially, how fast your model learns 
-  learning_rate = 0.03
-  
   # Initializing our Loss function, We use BCELoss because its a binary classification problem
-  if problem == 1:
-
-    learning_rate = 0.03
-    
-    loss = BCELoss()
-    final_layer = Sigmoid()
-    
-  elif problem == 2:
-    
-    learning_rate = 0.8
-    
-    loss = CrossEntropyLoss()
-    final_layer = Softmax()
-    
-  else:     
-    learning_rate = 0.03
-    loss = MSELoss()
-
   layers = [
     Dense(input_size = n_features, output_size = 64, initializer = 'he'), # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
     ReLU(), # ReLU Activation Function
@@ -96,9 +77,24 @@ if __name__ == "__main__":
     ReLU(), # relu again
     Dropout(keep_prob = 0.95), # Dropout layer, turns off 10% of unitS
     Dense(input_size = 32, output_size = n_classes, initializer = 'he'),#'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
-    #final_layer# Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
-     # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
   ]
+  
+  if problem == 1:
+    learning_rate = 0.03
+    loss = BCELoss()
+    
+    layers.append(Sigmoid())
+    
+  elif problem == 2:
+    learning_rate = 0.8
+    loss = CrossEntropyLoss()
+
+    layers.append(Softmax())
+    
+  else:     
+    learning_rate = 0.03
+    loss = MSELoss()
+
 
   model = NeuralNetwork(n_classes = n_classes , # Needed
                         layers = layers, # Needed
