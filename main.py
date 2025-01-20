@@ -3,7 +3,6 @@ np = get_numpy()
 from utils import *
 from Network import NeuralNetwork
 from Losses import BCELoss,CrossEntropyLoss
-
 from Layers import Dense,Dropout
 from Activations import ReLU,Sigmoid,Softmax
 
@@ -13,14 +12,20 @@ _GPU_AVAILABLE = is_gpu_available()
 
 np.random.seed(42)
 
+# type of problem :
+# 1 for multi class classification on mnist
+# 2 for binary classification on a modified version of mnist 
+# 3 for regression, not yet implemented
+
 problem = 2
 # Loading Mnist data
 if __name__ == "__main__":
-  print("loading data")
   try:
     if problem == 2:
+      print("loading data : MNIST")
       X, y = load_mnist()
     else:
+      print("loading data : binary MNIST")
       X, y = load_binary_mnist()
       problem = 1
   except Exception as e:
@@ -51,11 +56,16 @@ if __name__ == "__main__":
   
   # Initializing our Loss function, We use BCELoss because its a binary classification problem
   if problem == 1:
+
     learning_rate = 0.03
+    
     loss = BCELoss()
     final_layer = Sigmoid()
+    
   else:
-    learning_rate = 0.5
+    
+    learning_rate = 0.8
+    
     loss = CrossEntropyLoss()
     final_layer = Softmax()
 
@@ -69,7 +79,7 @@ if __name__ == "__main__":
     ReLU(), # relu again
     Dense(input_size = 32, output_size = 32, initializer = 'he'), # Third Hidden layer input size = 32, output size = 32 he init again
     ReLU(), # relu again
-    Dropout(keep_prob = 0.95), # Dropout layer, turns off 10% of units
+    Dropout(keep_prob = 0.95), # Dropout layer, turns off 10% of unitS
     Dense(input_size = 32, output_size = n_classes, initializer = 'glorot'), # Output layer, input size = 32, output size = n_classes (1), glorot init because it uses sigmoid
     final_layer# Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
      # Sigmoid Activation function because we are using BCELoss (it's a binary classification problem, predicting if an image is 1 or not 1)
