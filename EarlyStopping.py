@@ -1,9 +1,9 @@
 from numpy import inf
-
+from InputValidation import InputValidator
 class EarlyStopping:
   def __init__(self, patience, delta = 0):
-    self.patience = patience
-    self.delta = delta
+    self.patience = InputValidator.validate_patience(patience)
+    self.delta = InputValidator.validate_delta(delta)
     self.counter = 0
     self.best_val_loss = inf
     self.current_epoch = 0
