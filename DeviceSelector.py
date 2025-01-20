@@ -13,6 +13,7 @@ try:
       
     except Exception as e:
       print(e)
+      print("Falling back to CPU")
       np = numpy
 
   else:

@@ -22,10 +22,12 @@ if __name__ == "__main__":
       X, y = load_mnist()
     else:
       X, y = load_binary_mnist()
+      problem = 1
   except Exception as e:
     print(e)
     #Falling back to generating XOR in case of errors
     print(f"Falling back to xor")
+    problem = 1
     n_samples = 2000
     X, y = generate_xor_data(n_samples, np)
   
@@ -45,13 +47,15 @@ if __name__ == "__main__":
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = ratio)
 
   # How Big/Small your weight updates are, essentially, how fast your model learns 
-  learning_rate = 0.5
+  learning_rate = 0.03
   
   # Initializing our Loss function, We use BCELoss because its a binary classification problem
   if problem == 1:
+    learning_rate = 0.03
     loss = BCELoss()
     final_layer = Sigmoid()
   else:
+    learning_rate = 0.5
     loss = CrossEntropyLoss()
     final_layer = Softmax()
 
