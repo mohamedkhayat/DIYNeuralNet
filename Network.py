@@ -93,38 +93,9 @@ class NeuralNetwork():
 
       if validation_data is not None:
         X_test, y_test = validation_data
-        self.set_to_eval()
-        
-        # Create batches for test data too
-        test_batches = create_mini_batches(X_test, y_test, batch_size=batch_size,
-                                        shuffle=False, drop_last=False)
-        
-        test_loss = 0.0
-        test_correct = 0
-        test_total = 0
-        test_num_batches = 0
-        
-        for X_batch_test, y_batch_test in test_batches:
-            y_pred_test = self.forward(X_batch_test, train=False)
-            batch_test_loss = self.criterion(y_batch_test, y_pred_test)
-            test_loss += float(batch_test_loss)
-            
-            
-            if isinstance(self.criterion, BCELoss):
-              y_pred_test_labels = (y_pred_test > 0.5).astype(int)
-              test_correct += np.sum(y_pred_test_labels == y_batch_test)
-              
-            elif(isinstance(self.criterion, CrossEntropyLoss)):
-              y_pred_test_labels = np.argmax(y_pred_test, axis=0)
-              y_true_test = np.argmax(y_batch_test, axis=0)
-              test_correct += np.sum(y_pred_test_labels == y_true_test)
-            
-            test_total += y_batch_test.shape[1]
-            test_num_batches += 1
-        
-        test_loss = test_loss / test_num_batches  # Average loss over batches
-        test_accuracy = test_correct / test_total
-        #test_loss,test_accuracy = self.evaluate(X_test,y_test)
+
+        test_loss,test_accuracy = self.evaluate(X_test,y_test,batch_size)
+
         test_losses.append(float(test_loss))
         test_accuracies.append(float(test_accuracy))
         
@@ -173,9 +144,6 @@ class NeuralNetwork():
       
       dA = self.criterion.backward(y_batch, y_pred)
 
-      #print("Y pred before argmax : ",y_pred.shape)
-      #print("Y batch before argmax : ",y_batch.shape)
-
       if isinstance(self.criterion, BCELoss):
         y_pred_labels = (y_pred > 0.5).astype(int)
         batch_correct = np.sum(y_pred_labels == y_batch)
@@ -201,6 +169,41 @@ class NeuralNetwork():
     return avg_train_loss,avg_train_accuracy
   
   
+  def evaluate(self,X_test,y_test,batch_size):
+    self.set_to_eval()
+      
+      # Create batches for test data too
+    test_batches = create_mini_batches(X_test, y_test, batch_size=batch_size,
+                                    shuffle=False, drop_last=False)
+    
+    test_loss = 0.0
+    test_correct = 0
+    test_total = 0
+    test_num_batches = 0
+    
+    for X_batch_test, y_batch_test in test_batches:
+        y_pred_test = self.forward(X_batch_test, train=False)
+        batch_test_loss = self.criterion(y_batch_test, y_pred_test)
+        test_loss += float(batch_test_loss)
+        
+        if isinstance(self.criterion, BCELoss):
+          y_pred_test_labels = (y_pred_test > 0.5).astype(int)
+          test_correct += np.sum(y_pred_test_labels == y_batch_test)
+          
+        elif(isinstance(self.criterion, CrossEntropyLoss)):
+          y_pred_test_labels = np.argmax(y_pred_test, axis=0)
+          y_true_test = np.argmax(y_batch_test, axis=0)
+          test_correct += np.sum(y_pred_test_labels == y_true_test)
+        
+        test_total += y_batch_test.shape[1]
+        test_num_batches += 1
+    
+    test_loss = test_loss / test_num_batches  # Average loss over batches
+    test_accuracy = test_correct / test_total
+
+    return test_loss,test_accuracy
+  
+  
   def predict(self,X):
 
     if(len(X.shape) == 1):
@@ -221,7 +224,6 @@ class NeuralNetwork():
     batch_size = y_true.shape[1]
 
     if isinstance(self.criterion, CrossEntropyLoss):
-      #y_pred = np.argmax(y_pred, axis = 0)
       y_true= np.argmax(y_true, axis = 0)
 
     correct = np.sum(y_pred == y_true)
