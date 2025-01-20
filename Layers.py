@@ -17,6 +17,10 @@ class Layer(ABC):
 class Dense(Layer):
   def __init__(self,input_size,output_size,initializer='he'):
     super().__init__()
+
+    self.input_size = input_size
+    self.output_size = output_size
+
     self.params['W'] = np.random.randn(output_size, input_size)
 
     if(initializer == 'he'):
