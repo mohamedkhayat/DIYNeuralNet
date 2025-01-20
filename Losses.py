@@ -1,7 +1,7 @@
 from abc import ABC,abstractmethod
 from DeviceSelector import *
 np = get_numpy()
-
+from InputValidation import InputValidator
 """
 def binary_cross_entropy(yhat,y,weights=None,lamb=None):
   loss function, takes in predictions yhat, true labels y, weights and scaling factor
@@ -44,6 +44,9 @@ class BCELoss(Loss):
     self.batch_size = None
   
   def __call__(self,y_true,y_pred):
+
+    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
+
     self.batch_size = y_pred.shape[1]
 
     epsilon = 1e-7
