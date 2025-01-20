@@ -86,57 +86,14 @@ class NeuralNetwork():
 
     for epoch in range(epochs):
 
-      epoch_loss = 0.0
-      num_batches = 0
-      correct_predictions = 0
-      total_samples = 0
-
-      self.train()
-     
-      mini_batches =  create_mini_batches(X_train,y_train, batch_size = batch_size,
-                                          shuffle = shuffle, drop_last = True)
-        
-      for X_batch, y_batch in mini_batches:
-        self.zero_grad()
-        
-        y_pred = self.forward(X_batch, train=True)      
-        
-        loss = self.criterion(y_batch, y_pred)
-        epoch_loss += float(loss)
-        
-        dA = self.criterion.backward(y_batch, y_pred)
-
-        #print("Y pred before argmax : ",y_pred.shape)
-        #print("Y batch before argmax : ",y_batch.shape)
-
-        if isinstance(self.criterion, BCELoss):
-          y_pred_labels = (y_pred > 0.5).astype(int)
-          batch_correct = np.sum(y_pred_labels == y_batch)
-          
-          self.backprop(dA)
-          
-        elif(isinstance(self.criterion, CrossEntropyLoss)):
-          y_pred_labels = np.argmax(y_pred, axis = 0)
-          y_true_labels = np.argmax(y_batch, axis = 0)  
-          batch_correct = np.sum(y_pred_labels == y_true_labels)
-          
-          self.backprop(y_batch)
-        
-        self.optimize()
-        
-        correct_predictions += int(batch_correct)
-        total_samples += y_batch.shape[1]
-        num_batches += 1
-        
-      avg_train_loss =  epoch_loss / num_batches
-      avg_train_accuracy = correct_predictions / total_samples
+      avg_train_loss,avg_train_accuracy = self.train(X_train,y_train,batch_size,shuffle)
       
       train_losses.append(float(avg_train_loss))
       train_accuracies.append(float(avg_train_accuracy))
 
       if validation_data is not None:
         X_test, y_test = validation_data
-        self.eval()
+        self.set_to_eval()
         
         # Create batches for test data too
         test_batches = create_mini_batches(X_test, y_test, batch_size=batch_size,
@@ -145,7 +102,7 @@ class NeuralNetwork():
         test_loss = 0.0
         test_correct = 0
         test_total = 0
-        num_batches = 0
+        test_num_batches = 0
         
         for X_batch_test, y_batch_test in test_batches:
             y_pred_test = self.forward(X_batch_test, train=False)
@@ -163,13 +120,11 @@ class NeuralNetwork():
               test_correct += np.sum(y_pred_test_labels == y_true_test)
             
             test_total += y_batch_test.shape[1]
-
-            total_samples += y_batch_test.shape[1]
-            num_batches += 1
+            test_num_batches += 1
         
-        test_loss = test_loss / num_batches  # Average loss over batches
+        test_loss = test_loss / test_num_batches  # Average loss over batches
         test_accuracy = test_correct / test_total
-        
+        #test_loss,test_accuracy = self.evaluate(X_test,y_test)
         test_losses.append(float(test_loss))
         test_accuracies.append(float(test_accuracy))
         
@@ -191,11 +146,60 @@ class NeuralNetwork():
                
     return History
 
-  def train(self):
+  def set_to_train(self):
     self.training = True
     
-  def eval(self):
+  def set_to_eval(self):
     self.training = False
+  
+  def train(self,X_train,y_train,batch_size,shuffle):
+    epoch_loss = 0.0
+    num_batches = 0
+    correct_predictions = 0
+    total_samples = 0
+
+    self.set_to_train()
+    
+    mini_batches =  create_mini_batches(X_train,y_train, batch_size = batch_size,
+                                        shuffle = shuffle, drop_last = True)
+      
+    for X_batch, y_batch in mini_batches:
+      self.zero_grad()
+      
+      y_pred = self.forward(X_batch, train=True)      
+      
+      loss = self.criterion(y_batch, y_pred)
+      epoch_loss += float(loss)
+      
+      dA = self.criterion.backward(y_batch, y_pred)
+
+      #print("Y pred before argmax : ",y_pred.shape)
+      #print("Y batch before argmax : ",y_batch.shape)
+
+      if isinstance(self.criterion, BCELoss):
+        y_pred_labels = (y_pred > 0.5).astype(int)
+        batch_correct = np.sum(y_pred_labels == y_batch)
+        
+        self.backprop(dA)
+        
+      elif(isinstance(self.criterion, CrossEntropyLoss)):
+        y_pred_labels = np.argmax(y_pred, axis = 0)
+        y_true_labels = np.argmax(y_batch, axis = 0)  
+        batch_correct = np.sum(y_pred_labels == y_true_labels)
+        
+        self.backprop(y_batch)
+      
+      self.optimize()
+      
+      correct_predictions += int(batch_correct)
+      total_samples += y_batch.shape[1]
+      num_batches += 1
+
+    avg_train_loss =  epoch_loss / num_batches
+    avg_train_accuracy = correct_predictions / total_samples
+    
+    return avg_train_loss,avg_train_accuracy
+  
   
   def predict(self,X):
 
