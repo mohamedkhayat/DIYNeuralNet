@@ -5,7 +5,7 @@ from EarlyStopping import EarlyStopping
 from utils import create_mini_batches
 from Layers import Dropout,Dense,Layer
 from Activations import Softmax,Activation
-from Losses import CrossEntropyLoss,BCELoss,Loss
+from Losses import CrossEntropyLoss,BCELoss,Loss,MSELoss
 from InputValidation import InputValidator
 class NeuralNetwork():
   
@@ -47,6 +47,7 @@ class NeuralNetwork():
     """
 
     for i,layer in reversed(list(enumerate(self.layers))):
+      #what is the point of this if statement ? need to check again, seems pointless
       if (isinstance(layer, Softmax) and isinstance(self.criterion, CrossEntropyLoss)):
         dA = layer.backward(dA)
       else:
@@ -136,18 +137,16 @@ class NeuralNetwork():
       
     for X_batch, y_batch in mini_batches:
       self.zero_grad()
-      
       y_pred = self.forward(X_batch, train=True)      
       
       loss = self.criterion(y_batch, y_pred)
       epoch_loss += float(loss)
       
-      dA = self.criterion.backward(y_batch, y_pred)
-
       if isinstance(self.criterion, BCELoss):
         y_pred_labels = (y_pred > 0.5).astype(int)
         batch_correct = np.sum(y_pred_labels == y_batch)
         
+        dA = self.criterion.backward(y_batch, y_pred)
         self.backprop(dA)
         
       elif(isinstance(self.criterion, CrossEntropyLoss)):
@@ -157,14 +156,25 @@ class NeuralNetwork():
         
         self.backprop(y_batch)
       
+      elif(isinstance(self.criterion, MSELoss)):
+
+        dA = self.criterion.backward(y_batch, y_pred)
+        self.backprop(dA)
+
       self.optimize()
       
-      correct_predictions += int(batch_correct)
-      total_samples += y_batch.shape[1]
+      if not (isinstance(self.criterion,MSELoss)):
+        correct_predictions += int(batch_correct)
+        total_samples += y_batch.shape[1]
+
       num_batches += 1
 
+    if not isinstance(self.criterion, MSELoss): 
+      avg_train_accuracy = correct_predictions / total_samples
+    else:
+      avg_train_accuracy = 0  
+
     avg_train_loss =  epoch_loss / num_batches
-    avg_train_accuracy = correct_predictions / total_samples
     
     return avg_train_loss,avg_train_accuracy
   
@@ -199,7 +209,10 @@ class NeuralNetwork():
         test_num_batches += 1
     
     test_loss = test_loss / test_num_batches  # Average loss over batches
-    test_accuracy = test_correct / test_total
+    if not isinstance(self.criterion, MSELoss):
+      test_accuracy = test_correct / test_total
+    else:
+      test_accuracy = 0
 
     return test_loss,test_accuracy
   
