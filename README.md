@@ -50,12 +50,13 @@ python main.py
 1. **Import required modules**:
 
 ```python
-from network import NeuralNetwork
-from layers import Dense, Dropout
-from activations import ReLU, Sigmoid
-from losses import BCELoss
-from utils import *  # Import all utility functions
+from Network import NeuralNetwork
+from Layers import Dense, Dropout
+from Activations import ReLU, Sigmoid
+from Losses import BCELoss
+from Utils import *  # Import all utility functions
 from DeviceSelector import *  # For selecting CPU/GPU device
+np = get_numpy()
 ```
 
 2. **Define network architecture**:
