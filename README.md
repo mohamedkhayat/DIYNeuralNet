@@ -94,17 +94,22 @@ model = NeuralNetwork(
     criterion=CrossEntropyLoss()  # Use BCELoss for binary classification or MSELoss for regression
 )
 ```
+Certainly! Here's a more polished version for your README:
 
-4. **Train the model**:
+---
+
+4. **Train the Model**:
+
+To train the model, ensure that the input data `X` has the shape `(n_features, n_samples)` and the target labels `y` have the shape `(n_classes, n_samples)`.
 
 ```python
 history = model.fit(
-    X_train=X_train,
-    y_train=y_train,
-    epochs=100,
-    batch_size=32,
-    validation_data=(X_val, y_val),
-    early_stopping_patience=10
+    X_train=X_train,            # Training features (shape: n_features x n_samples)
+    y_train=y_train,            # Training labels (shape: n_classes x n_samples)
+    epochs=100,                 # Number of training epochs
+    batch_size=32,              # Batch size for training
+    validation_data=(X_val, y_val),  # Validation data for evaluation during training
+    early_stopping_patience=10  # Patience for early stopping (stopping training if no improvement)
 )
 ```
 
