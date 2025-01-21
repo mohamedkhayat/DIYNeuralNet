@@ -47,11 +47,7 @@ class NeuralNetwork():
     """
 
     for i,layer in reversed(list(enumerate(self.layers))):
-      #what is the point of this if statement ? need to check again, seems pointless
-      if (isinstance(layer, Softmax) and isinstance(self.criterion, CrossEntropyLoss)):
-        dA = layer.backward(dA)
-      else:
-        dA = layer.backward(dA)
+      dA = layer.backward(dA)
 
   def zero_grad(self):
     
@@ -208,11 +204,12 @@ class NeuralNetwork():
         test_total += y_batch_test.shape[1]
         test_num_batches += 1
     
-    test_loss = test_loss / test_num_batches  # Average loss over batches
     if not isinstance(self.criterion, MSELoss):
       test_accuracy = test_correct / test_total
     else:
       test_accuracy = 0
+
+    test_loss = test_loss / test_num_batches  # Average loss over batches
 
     return test_loss,test_accuracy
   
