@@ -1,7 +1,9 @@
-from abc import ABC,abstractmethod
+from abc import ABC, abstractmethod
 from DeviceSelector import *
-np = get_numpy()
 from InputValidation import InputValidator
+
+np = get_numpy()
+
 """
 def binary_cross_entropy(yhat,y,weights=None,lamb=None):
   loss function, takes in predictions yhat, true labels y, weights and scaling factor
@@ -26,66 +28,70 @@ def binary_cross_entropy(yhat,y,weights=None,lamb=None):
   return loss 
 
 """
-class Loss(ABC):
-  def __init__(self):
-    super().__init__()
-    self.batch_size = None
-  @abstractmethod
-  def __call__(self,y_true,y_pred):
-    pass
 
-  @abstractmethod
-  def backward(self,loss):
-    pass
+
+class Loss(ABC):
+    def __init__(self):
+        super().__init__()
+        self.batch_size = None
+
+    @abstractmethod
+    def __call__(self, y_true, y_pred):
+        pass
+
+    @abstractmethod
+    def backward(self, loss):
+        pass
+
 
 class BCELoss(Loss):
-  #NEED TO ADD L2 
-  def __call__(self,y_true,y_pred):
+    # NEED TO ADD L2
+    def __call__(self, y_true, y_pred):
+        y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
 
-    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
+        epsilon = 1e-7
 
-    epsilon = 1e-7
-    
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)       
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
 
-    loss = - np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
-      
-    return loss 
+        loss = -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
-  def backward(self,y_true,y_pred):
-    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
-    epsilon = 1e-7
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return (y_pred - y_true) / (y_pred * (1 - y_pred) + epsilon)
+        return loss
+
+    def backward(self, y_true, y_pred):
+        y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
+        epsilon = 1e-7
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+        return (y_pred - y_true) / (y_pred * (1 - y_pred) + epsilon)
+
 
 class CrossEntropyLoss(Loss):
-  def __call__(self,y_true,y_pred):
-    
-    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
+    def __call__(self, y_true, y_pred):
+        y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
 
-    self.batch_size = y_true.shape[1]
+        self.batch_size = y_true.shape[1]
 
-    epsilon = 1e-7
-    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-    log_preds_across_all_samples = np.log(y_pred) * y_true
-    
-    loss = -np.mean(log_preds_across_all_samples)
-    
-    return loss
-    
-  def backward(self, y_true, y_pred):
-    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
-    return y_pred - y_true
+        epsilon = 1e-7
+        y_pred = np.clip(y_pred, epsilon, 1.0 - epsilon)
+        log_preds_across_all_samples = np.log(y_pred) * y_true
+
+        loss = -np.mean(log_preds_across_all_samples)
+
+        return loss
+
+    def backward(self, y_true, y_pred):
+        y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
+        return y_pred - y_true
+
 
 class MSELoss(Loss):
-  def __call__(self,y_true,y_pred):
-    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
+    def __call__(self, y_true, y_pred):
+        y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
 
-    self.batch_size = y_true.shape[1]
+        self.batch_size = y_true.shape[1]
 
-    return np.mean(np.square(y_true - y_pred))
-    
-  def backward(self,y_true,y_pred):
-    y_true,y_pred = InputValidator.validate_same_shape(y_true,y_pred)
+        return np.mean(np.square(y_true - y_pred))
 
-    return 2 * (y_pred - y_true) / self.batch_size
+    def backward(self, y_true, y_pred):
+        y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
+
+        return 2 * (y_pred - y_true) / self.batch_size
