@@ -73,7 +73,7 @@ if __name__ == "__main__":
             input_size=64, output_size=64, initializer="he"
         ),  # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
         ReLU(),  # ReLU again
-        Dropout(keep_prob=0.95),  # Dropout layer, turns off 10% of units
+        Dropout(keep_prob=0.95),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
         Dense(
             input_size=64, output_size=32, initializer="he"
         ),  # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
@@ -82,7 +82,7 @@ if __name__ == "__main__":
             input_size=32, output_size=32, initializer="he"
         ),  # Third Hidden layer input size = 32, output size = 32 he init again
         ReLU(),  # relu again
-        Dropout(keep_prob=0.95),  # Dropout layer, turns off 10% of unitS
+        Dropout(keep_prob=0.95),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
     ]
 
     if problem == 1:
