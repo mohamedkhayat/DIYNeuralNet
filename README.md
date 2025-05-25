@@ -94,9 +94,6 @@ model = NeuralNetwork(
     criterion=CrossEntropyLoss()  # Use BCELoss for binary classification or MSELoss for regression
 )
 ```
-Certainly! Here's a more polished version for your README:
-
----
 
 4. **Train the Model**:
 
@@ -145,9 +142,7 @@ This implementation lays the groundwork for a fully functional neural network fr
 5. **Improved Usability**:
    - Save and load functionality for model parameters.
    - Detailed logging and visualization dashboards.
-
-This roadmap ensures the project remains a valuable learning resource while gradually evolving into a robust deep learning library.
-
+   
 ---
 
 ## License
