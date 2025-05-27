@@ -66,20 +66,20 @@ if __name__ == "__main__":
     # Initializing our Loss function, We use BCELoss because its a binary classification problem
     layers = [
         Dense(
-            input_size=n_features, output_size=64, initializer="he"
+            input_size=n_features, output_size=512, initializer="he"
         ),  # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
         ReLU(),  # ReLU Activation Function
         Dense(
-            input_size=64, output_size=64, initializer="he"
+            input_size=512, output_size=256, initializer="he"
         ),  # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
         ReLU(),  # ReLU again
         Dropout(keep_prob=0.95),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
         Dense(
-            input_size=64, output_size=32, initializer="he"
+            input_size=256, output_size=128, initializer="he"
         ),  # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
         ReLU(),  # relu again
         Dense(
-            input_size=32, output_size=32, initializer="he"
+            input_size=128, output_size=32, initializer="he"
         ),  # Third Hidden layer input size = 32, output size = 32 he init again
         ReLU(),  # relu again
         Dropout(keep_prob=0.95),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         layers.append(Sigmoid())
 
     elif problem == 2:
-        learning_rate = 0.8
+        learning_rate = 0.03
         loss = CrossEntropyLoss()
 
         layers.append(
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     History = model.fit(
         X_train=X_train,  # Needed
         y_train=y_train,  # Needed
-        batch_size=64 * 8,  # Optional, defaults to 64
+        batch_size=64,  # Optional, defaults to 64
         shuffle=True,  # Optional, defaults to True
         epochs=200,  # Needed
         validation_data=(X_test, y_test),  # Optional if you dont need plotting
