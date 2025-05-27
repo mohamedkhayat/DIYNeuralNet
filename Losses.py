@@ -70,17 +70,18 @@ class CrossEntropyLoss(Loss):
 
         self.batch_size = y_true.shape[1]
 
-        epsilon = 1e-7
+        epsilon = 1e-8
         y_pred = np.clip(y_pred, epsilon, 1.0 - epsilon)
-        log_preds_across_all_samples = np.log(y_pred) * y_true
+        log_pred = np.log(y_pred)
+        selected_log_preds = np.sum(log_pred * y_true, axis = 0)
 
-        loss = -np.mean(log_preds_across_all_samples)
+        loss = -np.mean(selected_log_preds)
 
         return loss
 
     def backward(self, y_true, y_pred):
         y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
-        return y_pred - y_true
+        return (y_pred - y_true) / self.batch_size
 
 
 class MSELoss(Loss):
