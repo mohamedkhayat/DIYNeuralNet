@@ -1,5 +1,4 @@
-from DeviceSelector import *
-
+from DeviceSelector import get_numpy, is_gpu_available
 import utils
 from Network import NeuralNetwork
 from Losses import BCELoss, CrossEntropyLoss, MSELoss
@@ -92,7 +91,7 @@ if __name__ == "__main__":
     ]
 
     if problem == 1:
-        learning_rate = 1e-3 
+        learning_rate = 1e-3
         loss = BCELoss()
 
         layers.append(
