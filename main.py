@@ -17,7 +17,7 @@ np.random.seed(42)
 # 2 for multi class classification on mnist
 # 3 for regression, not yet implemented
 
-problem = 2
+problem = 1
 # Loading Mnist data
 if __name__ == "__main__":
     # need to make all of this a function
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     ]
 
     if problem == 1:
-        learning_rate = 1e-3
+        learning_rate = 1e-2
         loss = BCELoss()
 
         layers.append(
