@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from DeviceSelector import *
 from InputValidation import InputValidator
+from DeviceSelector import get_numpy
 
 np = get_numpy()
 

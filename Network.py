@@ -1,5 +1,5 @@
 import time
-from DeviceSelector import *
+from DeviceSelector import get_numpy
 
 from EarlyStopping import EarlyStopping
 from utils import create_mini_batches
