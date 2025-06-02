@@ -1,3 +1,4 @@
+# I really should make this a class
 import numpy
 
 _GPU_AVAILABLE = False

@@ -18,34 +18,18 @@ class NeuralNetwork:
         self.criterion = InputValidator.validate_criterion(criterion)
 
     def forward(self, X, train=None):
-        """
-        dropout is a dict, with key being layer to implement dropout and value being the keep prob
-        training being a boolean to know if applying dropout is needed or not since dropout is only applied
-        during training and not inference
-        this function is used to make a prediction yhat for an input x
-        """
-
         if train is None:
             train = self.training
 
         output = X
+
         for layer in self.layers:
-            """
-      if self.training == False and isinstance(layer,Dropout):
-        continue
-      """
             output = layer.forward(output, train)
 
         return output
 
     def backprop(self, dA):
-        """
-        backpropagation, takes in input x used for calculating the gradients for the first layer, y used for calculating
-        the gradients for the last layer,cache that has the mask and the weights for each layer, and dropout to know which
-        layers we need to multiply by their mask
-        """
-
-        for i, layer in reversed(list(enumerate(self.layers))):
+        for layer in reversed(list(self.layers)):
             dA = layer.backward(dA)
 
     def zero_grad(self):
