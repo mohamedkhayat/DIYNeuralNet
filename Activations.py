@@ -47,6 +47,21 @@ class Sigmoid(Activation):
         return (self.output * (1 - self.output)) * dA
 
 
+class Tanh(Activation):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, Z, train=True):
+        output = np.tanh(Z)
+        if train:
+            self.output = output
+        return output
+
+    def backward(self, dA):
+        grad = 1 - np.square(self.output)
+        return grad * dA
+
+
 class Softmax(Activation):
     def __init__(self):
         super().__init__()
