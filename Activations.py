@@ -20,6 +20,7 @@ class Activation(ABC):
 class ReLU(Activation):
     def __init__(self):
         super().__init__()
+        self.input = None
 
     def forward(self, Z, train=True):
         if train:
@@ -34,6 +35,8 @@ class ReLU(Activation):
 class Sigmoid(Activation):
     def __init__(self):
         super().__init__()
+        self.input = None
+        self.output = None
 
     def forward(self, Z, train=True):
         output = 1 / (1 + np.exp(-Z))
@@ -50,6 +53,7 @@ class Sigmoid(Activation):
 class Tanh(Activation):
     def __init__(self):
         super().__init__()
+        self.output = None
 
     def forward(self, Z, train=True):
         output = np.tanh(Z)
@@ -65,6 +69,7 @@ class Tanh(Activation):
 class Softmax(Activation):
     def __init__(self):
         super().__init__()
+        self.output = None
 
     def forward(self, Z, train=True):
         numerator = np.exp(Z - np.max(Z, axis=0, keepdims=True))
