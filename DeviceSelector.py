@@ -1,28 +1,24 @@
-import os
 import numpy
-import cupy
 
 _GPU_AVAILABLE = False
 
 try:
-    output = os.popen("nvidia-smi").read()
+    import cupy
 
-    if "NVIDIA-SMI" in output:
-        try:
-            _GPU_AVAILABLE = bool(cupy.cuda.runtime.getDeviceCount())
-            np = cupy
+    if cupy.cuda.is_available():
+        _GPU_AVAILABLE = True
+        np = cupy
+        print("Using GPU")
 
-        except Exception as e:
-            print(e)
-            print("Falling back to CPU")
-            np = numpy
-
-    else:
-        np = numpy
+except ImportError as e:
+    print(f"Error when importing cupy : {e}")
+    print("Falling back to CPU")
+    np = numpy
 
 except Exception as e:
+    print(f"Error when attempting to use GPU: {e}")
+    print("Falling back to CPU")
     np = numpy
-    print(e)
 
 
 def get_numpy():
