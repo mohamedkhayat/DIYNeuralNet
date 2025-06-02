@@ -1,6 +1,6 @@
 from random import randint
 from DeviceSelector import *
-
+import numpy
 import pathlib
 import matplotlib.pyplot as plt
 
@@ -63,7 +63,7 @@ def plot_image(X, model, n_images, original_image_shape=(28, 28), n_classes=1):
 
         test_pred = model.predict(test_example)
 
-        if is_gpu_available() == True:
+        if is_gpu_available():
             test_example = test_example.get()
 
         plt.subplot(2, (n_images + 1) // 2, i + 1)
@@ -174,13 +174,13 @@ def create_mini_batches(X, y, batch_size=64, shuffle=True, drop_last=True):
     num_samples = X.shape[1]
     indices = np.arange(num_samples)
 
-    if shuffle == True:
+    if shuffle:
         np.random.shuffle(indices)
 
     for start_idx in range(0, num_samples, batch_size):
         end_idx = min(start_idx + batch_size, num_samples)
 
-        if drop_last == True and end_idx - start_idx < batch_size:
+        if drop_last and end_idx - start_idx < batch_size:
             break
 
         batch_indices = indices[start_idx:end_idx]

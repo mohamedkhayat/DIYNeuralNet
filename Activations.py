@@ -70,7 +70,7 @@ class Softmax(Activation):
         numerator = np.exp(Z - np.max(Z, axis=0, keepdims=True))
         probabilities = numerator / np.sum(numerator, axis=0, keepdims=True)
 
-        if train == True:
+        if train:
             self.output = probabilities
 
         return probabilities

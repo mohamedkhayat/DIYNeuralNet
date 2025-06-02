@@ -95,7 +95,7 @@ class InputValidator:
 
     @staticmethod
     def validate_same_shape(a, b):
-        if not (type(a) is type(b)):
+        if type(a) is not type(b):
             raise TypeError(
                 "paramater 1 and 2 are two different types, they need to be of same type"
             )
