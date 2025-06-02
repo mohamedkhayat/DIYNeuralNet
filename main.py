@@ -4,7 +4,7 @@ import utils
 from Network import NeuralNetwork
 from Losses import BCELoss, CrossEntropyLoss, MSELoss
 from Layers import Dense, Dropout
-from Activations import ReLU, Sigmoid, Softmax, Tanh
+from Activations import ReLU, Sigmoid, Softmax
 
 np = get_numpy()
 _GPU_AVAILABLE = is_gpu_available()
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
         # Falling back to generating XOR in case of errors
-        print(f"Falling back to xor")
+        print("Falling back to xor")
         problem = 1
         n_samples = 2000
         X, y = utils.generate_xor_data(n_samples, np)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     ]
 
     if problem == 1:
-        learning_rate = 0.03
+        learning_rate = 1e-3 
         loss = BCELoss()
 
         layers.append(
