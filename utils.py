@@ -1,5 +1,5 @@
 from random import randint
-from DeviceSelector import *
+from DeviceSelector import get_numpy, is_gpu_available
 import numpy
 import pathlib
 import matplotlib.pyplot as plt
@@ -63,9 +63,6 @@ def plot_image(X, model, n_images, original_image_shape=(28, 28), n_classes=1):
 
         test_pred = model.predict(test_example)
 
-        if is_gpu_available():
-            test_example = test_example.get()
-
         plt.subplot(2, (n_images + 1) // 2, i + 1)
 
         test_example = test_example.reshape(HEIGHT, WIDTH) * 255.0
@@ -76,7 +73,9 @@ def plot_image(X, model, n_images, original_image_shape=(28, 28), n_classes=1):
         else:
             plt.title(str(test_pred.item()))
 
-        plt.imshow(test_example, cmap="gray")
+        plt.imshow(
+            test_example.get() if is_gpu_available() else test_example, cmap="gray"
+        )
         plt.axis("off")
 
     plt.tight_layout()
