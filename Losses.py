@@ -73,7 +73,7 @@ class CrossEntropyLoss(Loss):
         epsilon = 1e-8
         y_pred = np.clip(y_pred, epsilon, 1.0 - epsilon)
         log_pred = np.log(y_pred)
-        selected_log_preds = np.sum(log_pred * y_true, axis = 0)
+        selected_log_preds = np.sum(log_pred * y_true, axis=0)
 
         loss = -np.mean(selected_log_preds)
 
