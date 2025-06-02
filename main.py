@@ -4,7 +4,7 @@ import utils
 from Network import NeuralNetwork
 from Losses import BCELoss, CrossEntropyLoss, MSELoss
 from Layers import Dense, Dropout
-from Activations import ReLU, Sigmoid, Softmax
+from Activations import ReLU, Sigmoid, Softmax, Tanh
 
 np = get_numpy()
 _GPU_AVAILABLE = is_gpu_available()
@@ -63,7 +63,9 @@ if __name__ == "__main__":
     # split data into train and validation data
     X_train, X_test, y_train, y_test = utils.train_test_split(X, y, test_size=ratio)
 
-    # Initializing our Loss function, We use BCELoss because its a binary classification problem
+    dropout_p = 0.8
+
+    # Defining the architecture of our neural network
     layers = [
         Dense(
             input_size=n_features, output_size=512, initializer="he"
@@ -73,7 +75,9 @@ if __name__ == "__main__":
             input_size=512, output_size=256, initializer="he"
         ),  # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
         ReLU(),  # ReLU again
-        Dropout(keep_prob=0.95),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
+        Dropout(
+            keep_prob=dropout_p
+        ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
         Dense(
             input_size=256, output_size=128, initializer="he"
         ),  # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
@@ -82,7 +86,9 @@ if __name__ == "__main__":
             input_size=128, output_size=32, initializer="he"
         ),  # Third Hidden layer input size = 32, output size = 32 he init again
         ReLU(),  # relu again
-        Dropout(keep_prob=0.95),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
+        Dropout(
+            keep_prob=dropout_p
+        ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
     ]
 
     if problem == 1:
@@ -95,7 +101,7 @@ if __name__ == "__main__":
         layers.append(Sigmoid())
 
     elif problem == 2:
-        learning_rate = 0.03
+        learning_rate = 0.1
         loss = CrossEntropyLoss()
 
         layers.append(
