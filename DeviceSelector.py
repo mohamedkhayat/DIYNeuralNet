@@ -9,6 +9,10 @@ try:
         _GPU_AVAILABLE = True
         np = cupy
         print("Using GPU")
+    else:
+        print("No Available GPU Detected")
+        print("Falling back to CPU")
+        np = numpy
 
 except ImportError as e:
     print(f"Error when importing cupy : {e}")
@@ -16,7 +20,7 @@ except ImportError as e:
     np = numpy
 
 except Exception as e:
-    print(f"Error when attempting to use GPU: {e}")
+    print(f"Error : {e}")
     print("Falling back to CPU")
     np = numpy
 
