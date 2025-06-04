@@ -65,30 +65,32 @@ if __name__ == "__main__":
     dropout_p = 0.85
 
     # Defining the architecture of our neural network
-    model = NeuralNetwork.Sequential([
-        Dense(
-            input_size=n_features, output_size=512, initializer="he"
-        ),  # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
-        ReLU(),  # ReLU Activation Function
-        Dense(
-            input_size=512, output_size=256, initializer="he"
-        ),  # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
-        ReLU(),  # ReLU again
-        Dropout(
-            keep_prob=dropout_p
-        ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
-        Dense(
-            input_size=256, output_size=128, initializer="he"
-        ),  # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
-        ReLU(),  # relu again
-        Dropout(
-            keep_prob=dropout_p
-        ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
-        Dense(
-            input_size=128, output_size=32, initializer="he"
-        ),  # Third Hidden layer input size = 32, output size = 32 he init again
-        ReLU(),  # relu again
-    ])
+    model = NeuralNetwork.Sequential(
+        [
+            Dense(
+                input_size=n_features, output_size=512, initializer="he"
+            ),  # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
+            ReLU(),  # ReLU Activation Function
+            Dense(
+                input_size=512, output_size=256, initializer="he"
+            ),  # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
+            ReLU(),  # ReLU again
+            Dropout(
+                keep_prob=dropout_p
+            ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
+            Dense(
+                input_size=256, output_size=128, initializer="he"
+            ),  # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
+            ReLU(),  # relu again
+            Dropout(
+                keep_prob=dropout_p
+            ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
+            Dense(
+                input_size=128, output_size=32, initializer="he"
+            ),  # Third Hidden layer input size = 32, output size = 32 he init again
+            ReLU(),  # relu again
+        ]
+    )
 
     if problem == 1:
         learning_rate = 8e-1
@@ -122,11 +124,11 @@ if __name__ == "__main__":
 
     # Training the model
     print("starting training")
-    
+
     History = model.fit(
         X_train=X_train,  # Needed
         y_train=y_train,  # Needed
-        batch_size=128*3,  # Optional, defaults to 64
+        batch_size=128 * 3,  # Optional, defaults to 64
         shuffle=True,  # Optional, defaults to True
         epochs=200,  # Needed
         validation_data=(X_test, y_test),  # Optional if you dont need plotting
