@@ -11,15 +11,15 @@ np = get_numpy()
 
 
 class NeuralNetwork:
-
     def __init__(self, layers):
         self.layers = InputValidator.validate_layers(layers)
+
     @staticmethod
     def Sequential(layers):
         layers = InputValidator.validate_layers(layers)
         model = NeuralNetwork(layers)
         return model
-     
+
     def compile(self, learning_rate, criterion):
         self.learning_rate = InputValidator.validate_learning_rate(learning_rate)
         self.criterion = InputValidator.validate_criterion(criterion)
