@@ -162,7 +162,7 @@ cython_debug/
 #.idea/
 
 # Data folder with the datasets
-data/*
+Data/*
 
 # vscode cache
 .vscode
