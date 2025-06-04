@@ -8,6 +8,10 @@ from Activations import ReLU, Sigmoid, Softmax
 np = get_numpy()
 _GPU_AVAILABLE = is_gpu_available()
 
+"""
+TODO: Update comments
+"""
+
 # Setting random seed for reproducibility
 
 np.random.seed(42)
