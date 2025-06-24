@@ -33,39 +33,76 @@ A pure NumPy/CuPy implementation of a deep neural network with modern features i
 
 ## Installation
 
-### Create and activate a Conda environment
+### 1. Clone the Repository
 
-```bash
-conda create -n neuralnet python=3.8.20
-conda activate neuralnet
-```
-
-### Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Clone the repository
-
+First, clone the project repository to your local machine:
 ```bash
 git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
 cd DIYNeuralNet
 ```
 
-### Download MNIST Data (for multi-class classification)
+### 2. Set Up the Environment
 
-For multi-class classification examples, download the MNIST dataset from Kaggle:
-1. Visit [Digit Recognizer Competition](https://www.kaggle.com/competitions/digit-recognizer/data)
-2. Download `train.csv` 
-3. Place it in the `Data/` directory
+Choose **one** of the following methods to set up the required environment.
 
-The `balanced_mnist_1.csv` file for binary classification is already included.
+#### Option A: Docker Installation (Recommended)
 
-### Run the example
+This method uses Docker to create an isolated, pre-configured environment with all dependencies, including CUDA and CuPy for GPU support. It is the most reliable way to ensure reproducibility.
 
+**Prerequisites:**
+- [Docker Engine](https://docs.docker.com/get-docker/) installed and running.
+- For GPU support: [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) installed.
+
+**Using VS Code Dev Containers (Easiest Method):**
+1. Install [Visual Studio Code](https://code.visualstudio.com/) and the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+2. Open the cloned `DIYNeuralNet` folder in VS Code.
+3. A notification will appear in the bottom-right corner: **"Reopen in Container"**. Click it.
+4. VS Code will automatically build the Docker image, start the container, and connect to it. You will now have a terminal open inside the fully configured environment.
+
+**Using Docker from the Command Line:**
+1. Build the Docker image from the project root:
+   ```bash
+   docker build -t diy-neural-net -f .devcontainer/Dockerfile .
+   ```
+2. Run the container. This command starts an interactive `bash` session inside the container with the project directory mounted.
+   ```bash
+   # With GPU support (recommended)
+   docker run -it --rm --gpus all -v "$(pwd)":/workspace diy-neural-net bash
+
+   # For CPU-only
+   docker run -it --rm -v "$(pwd)":/workspace diy-neural-net bash
+   ```
+
+#### Option B: Local Installation (using Conda)
+
+This method sets up the environment directly on your machine.
+
+1. **Create and activate a Conda environment:**
+   ```bash
+   conda create -n neuralnet python=3.10.2
+   conda activate neuralnet
+   ```
+2. **Install dependencies:**
+   For GPU acceleration, ensure you have a CUDA-compatible NVIDIA GPU and drivers installed. The `requirements.txt` file includes `cupy`, which will be used if a GPU is detected.
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### 3. Download Data and Run
+
+These steps are required regardless of the installation method you chose.
+
+**Download MNIST Data (for multi-class classification):**
+1. Go to the [Kaggle Digit Recognizer Competition](https://www.kaggle.com/competitions/digit-recognizer/data).
+2. Download `train.csv`.
+3. Place the downloaded file into the `Data/` directory in the project.
+
+*(Note: The `balanced_mnist_1.csv` file for binary classification is already included in the repository.)*
+
+**Run the example:**
+From your terminal (either the Conda environment or the Docker container session), execute:
 ```bash
-python src/main.py
+python3 src/main.py
 ```
 
 ---
