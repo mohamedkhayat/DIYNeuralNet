@@ -1,0 +1,16 @@
+{
+    "name" : "DIYNet Dev Container",
+    "build":{
+        "dockerfile" : "Dockerfile"
+    },
+    "runArgs": ["--gpus", "all"],
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "customizations": {
+        "vscode": {
+            "extensions": ["ms-python.python","ms-python.vscode-pylance","henrytsz.nvim","visualstudioexptteam.intellicode-api-usage-examples"]
+        }
+    },
+    "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt || true && pip install ruff mypy pre-commit sphinx sphinx-autodoc-typehints sphinx-autoapi furo",
+    "remoteUser" : "root"
+}
