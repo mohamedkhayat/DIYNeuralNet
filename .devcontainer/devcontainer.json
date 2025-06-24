@@ -11,6 +11,6 @@
             "extensions": ["ms-python.python","ms-python.vscode-pylance","henrytsz.nvim","visualstudioexptteam.intellicode-api-usage-examples"]
         }
     },
-    "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt || true && pip install ruff mypy pre-commit sphinx sphinx-autodoc-typehints sphinx-autoapi furo",
+    "postCreateCommand": "pip install --upgrade pip && pip install ruff mypy pre-commit sphinx sphinx-autodoc-typehints sphinx-autoapi furo",
     "remoteUser" : "root"
 }
