@@ -9,6 +9,7 @@ np = get_numpy()
 
 np.random.seed(42)
 
+
 def _get_data_path(filename: str) -> pathlib.Path:
     """Helper to find data files by searching current and parent directories."""
     # List of paths to check:
@@ -16,16 +17,16 @@ def _get_data_path(filename: str) -> pathlib.Path:
     # 2. ../Data (Run from a subdir like notebooks/)
     # 3. ../../Data (Run from deeper subdir)
     # 4. Relative to this utils.py file (Run as installed package in editable mode)
-    
+
     current_file_dir = pathlib.Path(__file__).resolve().parent
     # src/diy_neural_net/ -> src/ -> root/
     project_root = current_file_dir.parent.parent
-    
+
     search_paths = [
         pathlib.Path("Data") / filename,
         pathlib.Path("..") / "Data" / filename,
         pathlib.Path("../..") / "Data" / filename,
-        project_root / "Data" / filename
+        project_root / "Data" / filename,
     ]
 
     for path in search_paths:
@@ -36,6 +37,7 @@ def _get_data_path(filename: str) -> pathlib.Path:
         f"Could not find '{filename}'. Ensure the 'Data' folder exists in your project root.\n"
         f"Searched locations: {[str(p) for p in search_paths]}"
     )
+
 
 def train_test_split(
     X: ArrayType, y: ArrayType, test_size: float = 0.2
@@ -174,10 +176,8 @@ def load_binary_mnist() -> Tuple[ArrayType, ArrayType]:
     """
     file_path = _get_data_path("balanced_mnist_1.csv")
     print(f"Loading data from: {file_path}")
-    
-    data = np_cpu.loadtxt(
-        file_path, delimiter=",", skiprows=1
-    )
+
+    data = np_cpu.loadtxt(file_path, delimiter=",", skiprows=1)
     X = data[:, 1:].transpose()
     y = data[:, 0].reshape(1, -1)
     return np.asarray(X), np.asarray(y)
@@ -223,7 +223,7 @@ def to_cpu(data):
 
 def plot_metrics(History: dict) -> None:
     """Plot training metrics from training history.
-    
+
     Automatically detects if the task is Regression (Accuracy=0) or Classification
     and plots accordingly.
     """
@@ -242,7 +242,7 @@ def plot_metrics(History: dict) -> None:
         plt.ylabel("Loss")
         plt.legend()
         plt.grid(True)
-        
+
         try:
             plt.show()
         except Exception as e:
@@ -258,7 +258,7 @@ def plot_metrics(History: dict) -> None:
             plt.xlabel("Epochs")
             plt.ylabel("Accuracy")
             plt.legend()
-            
+
             y_min = min(np_cpu.min(train_accuracy), np_cpu.min(test_accuracy))
             y_max = max(np_cpu.max(train_accuracy), np_cpu.max(test_accuracy))
             plt.ylim([max(0, y_min - 0.1), min(1.0, y_max + 0.1)])
