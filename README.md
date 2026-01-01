@@ -167,10 +167,10 @@ utils.plot_metrics(history)
 
 On the MNIST dataset (35,000 images):
 
-| Model | Optimizer | Accuracy | Time/Epoch (RTX 5090) |
-|-------|-----------|----------|-----------------------|
-| SGD (Baseline) | GradientDescent | 92.4% | ~0.8s |
-| Deep MLP + BN | **Adam** | **97.8%** | **~0.9s** |
+| Optimizer | Accuracy | Time/Epoch (RTX 5090) |
+|-----------|----------|-----------------------|
+| GradientDescent | 92.4% | ~0.8s |
+| **Adam** | **97.8%** | **~0.9s** |
 
 ---
 
