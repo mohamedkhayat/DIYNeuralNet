@@ -155,6 +155,9 @@ class NeuralNetwork:
             train_losses.append(float(avg_train_loss))
             train_accuracies.append(float(avg_train_accuracy))
 
+            test_loss = None
+            test_accuracy = None
+
             if validation_data is not None:
                 X_test, y_test = validation_data
 
@@ -165,11 +168,18 @@ class NeuralNetwork:
 
             if epoch % 10 == 0:
                 print(f"Epoch : {epoch}")
-                print(
-                    f"Train Loss : {float(avg_train_loss):.4f} Test Loss : {float(test_loss):.4f}"
-                )
+                if test_loss is not None:
+                    print(
+                        f"Train Loss : {float(avg_train_loss):.4f} Test Loss : {float(test_loss):.4f}"
+                    )
+                else:
+                    print(f"Train Loss : {float(avg_train_loss):.4f}")
 
-            if early_stopping_patience is not None and er(test_loss):
+            if (
+                early_stopping_patience is not None
+                and test_loss is not None
+                and er(test_loss)
+            ):
                 break
 
         end_time = time.time()
