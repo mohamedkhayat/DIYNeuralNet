@@ -155,6 +155,7 @@ utils.plot_metrics(history)
 │   ├── Losses.py           # BCE, MSE, CrossEntropy
 │   ├── DeviceSelector.py   # CPU/GPU logic
 │   └── utils.py            # Data loading & Plotting
+├── tests/                  # Unit and Integration tests
 ├── Data/                   # Datasets (MNIST, etc.)
 ├── notebooks/              # Jupyter notebooks for demos
 ├── pyproject.toml          # Package configuration
