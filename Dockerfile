@@ -1,4 +1,4 @@
-FROM cupy/cupy:latest
+FROM cupy/cupy:v13.6.0
 USER root
 RUN apt-get update && apt-get upgrade -y \ 
     && apt-get install -y --no-install-recommends openssh-client\

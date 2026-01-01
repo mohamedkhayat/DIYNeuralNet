@@ -1,30 +1,39 @@
-from DeviceSelector import get_numpy, is_gpu_available
-import utils
-from Network import NeuralNetwork
-from Losses import BCELoss, CrossEntropyLoss, MSELoss
-from Layers import Dense, Dropout
-from Activations import ReLU, Sigmoid, Softmax
+"""Main module for neural network training and demonstration.
+
+This module provides examples of training neural networks on different types of problems:
+- Binary classification (modified MNIST for detecting 1s)
+- Multi-class classification (full MNIST digit classification)
+- Regression (synthetic polynomial data)
+
+The module demonstrates the usage of the DIY neural network library with various
+layer types, activation functions, optimizers, and loss functions.
+"""
+
+from .DeviceSelector import get_numpy, is_gpu_available
+from .Optimizer import Adam
+from . import utils
+from .Network import NeuralNetwork
+from .Losses import BCELoss, CrossEntropyLossWithLogits, MSELoss
+from .Layers import Dense, Dropout, BatchNorm
+from .Activations import ReLU, Sigmoid
 
 np = get_numpy()
-_GPU_AVAILABLE = is_gpu_available()
-
-"""
-TODO: Update comments
-"""
+_GPU_AVAILABLE: bool = is_gpu_available()
 
 # Setting random seed for reproducibility
-
 np.random.seed(42)
 
-# type of problem :
+# Type of problem configuration:
 # 1 for binary classification on a modified version of mnist
 # 2 for multi class classification on mnist
-# 3 for regression, not yet implemented
+# 3 for regression on synthetic data
 
-problem = 2
-# Loading Mnist data
-if __name__ == "__main__":
-    # need to make all of this a function
+
+def main() -> None:
+    """Main function to demonstrate neural network training."""
+    problem: int = 2
+    
+    # Loading data
     try:
         if problem == 3:
             print("loading data : Regression Data")
@@ -66,7 +75,7 @@ if __name__ == "__main__":
     # split data into train and validation data
     X_train, X_test, y_train, y_test = utils.train_test_split(X, y, test_size=ratio)
 
-    dropout_p = 0.85
+    dropout_keep_prob = 0.85
 
     # Defining the architecture of our neural network
     model = NeuralNetwork.Sequential(
@@ -74,30 +83,34 @@ if __name__ == "__main__":
             Dense(
                 input_size=n_features, output_size=512, initializer="he"
             ),  # Input layer, input size = n_features, output_size (n of units) = 64, HE init because it uses ReLU
+            BatchNorm(512),
             ReLU(),  # ReLU Activation Function
             Dense(
                 input_size=512, output_size=256, initializer="he"
             ),  # First hidden layer, input size = 64, output size = 64, he init too because it uses ReLU
+            BatchNorm(256),
             ReLU(),  # ReLU again
             Dropout(
-                keep_prob=dropout_p
+                keep_prob=dropout_keep_prob
             ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
             Dense(
                 input_size=256, output_size=128, initializer="he"
             ),  # Second Hidden layer, input size = 64, output size = 32, he init again because it uses ReLU
+            BatchNorm(128),
             ReLU(),  # relu again
             Dropout(
-                keep_prob=dropout_p
+                keep_prob=dropout_keep_prob
             ),  # Dropout layer, turns off (1 - keep_prob) * 100 % of units
             Dense(
                 input_size=128, output_size=32, initializer="he"
             ),  # Third Hidden layer input size = 32, output size = 32 he init again
+            BatchNorm(32),
             ReLU(),  # relu again
         ]
     )
 
     if problem == 1:
-        learning_rate = 8e-1
+        learning_rate = 1e-3
         loss = BCELoss()
 
         model.layers.append(
@@ -106,13 +119,12 @@ if __name__ == "__main__":
         model.layers.append(Sigmoid())
 
     elif problem == 2:
-        learning_rate = 9.99e-1
-        loss = CrossEntropyLoss()
+        learning_rate = 1e-3
+        loss = CrossEntropyLossWithLogits()
 
         model.layers.append(
             Dense(input_size=32, output_size=n_classes, initializer="glorot")
         )  # Output layer, input size = 32, output size = n_classes (multiple), glorot init because it uses softmax
-        model.layers.append(Softmax())
     else:
         learning_rate = 1e-4
         loss = MSELoss()
@@ -121,10 +133,9 @@ if __name__ == "__main__":
             Dense(input_size=32, output_size=n_classes, initializer="random")
         )  # Output layer, input size = 32, output size = n_classes (1), random init because it uses no activation function
 
-    model.compile(
-        learning_rate=learning_rate,  # Needed
-        criterion=loss,  # Needed
-    )
+    optimizer = Adam(model, learning_rate)
+
+    model.set_loss(loss)
 
     # Training the model
     print("starting training")
@@ -132,9 +143,10 @@ if __name__ == "__main__":
     History = model.fit(
         X_train=X_train,  # Needed
         y_train=y_train,  # Needed
-        batch_size=128 * 3,  # Optional, defaults to 64
+        optimizer=optimizer,
+        batch_size=64,  # Optional, defaults to 64
         shuffle=True,  # Optional, defaults to True
-        epochs=200,  # Needed
+        epochs=20,  # Needed
         validation_data=(X_test, y_test),  # Optional if you dont need plotting
         early_stopping_patience=15,  # Optional
         early_stopping_delta=0.001,  # Optional
@@ -145,7 +157,6 @@ if __name__ == "__main__":
     print(
         f"\nTime Elapsed : {History['Time_Elapsed']:.2F} seconds on : {'GPU' if _GPU_AVAILABLE else 'CPU'}\n"
     )
-
     utils.plot_metrics(History)
 
     if problem != 3:
@@ -175,3 +186,7 @@ if __name__ == "__main__":
             original_image_shape=(28, 28),
             n_classes=n_classes,
         )
+
+
+if __name__ == "__main__":
+    main()

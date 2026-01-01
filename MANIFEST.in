@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+recursive-include diy_neural_net *.py
+recursive-include Data *.csv
+prune **/__pycache__
+prune **/*.pyc
