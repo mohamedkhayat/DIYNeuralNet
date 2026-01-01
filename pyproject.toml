@@ -63,10 +63,12 @@ where = ["src"]
 [tool.ruff]
 target-version = "py38"
 line-length = 88
-select = ["E", "F", "W", "B", "I", "N", "UP", "ANN", "S", "C4", "EM", "ICN", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "TID", "ARG", "PTH", "ERA", "PD", "PGH", "PL", "TRY", "FLY", "NPY", "PERF", "RUF"]
-ignore = ["ANN101", "ANN102", "S101", "PLR0913", "PLR0912", "PLR0915"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "I", "N", "UP", "ANN", "S", "C4", "EM", "ICN", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "TID", "ARG", "PTH", "ERA", "PD", "PGH", "PL", "TRY", "FLY", "NPY", "PERF", "RUF"]
+ignore = ["S101", "PLR0913", "PLR0912", "PLR0915"]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/**/*.py" = ["S101", "PLR2004", "ANN"]
 
