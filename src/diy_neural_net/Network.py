@@ -44,7 +44,7 @@ class NeuralNetwork:
         model = NeuralNetwork(layers)
         return model
 
-    def set_loss(self, loss: Loss) -> "NeuralNetwork":
+    def set_loss(self, loss: Loss) -> None:
         """Set the loss function for the network.
 
         Args:
@@ -54,7 +54,6 @@ class NeuralNetwork:
             Self for method chaining
         """
         self.criterion = InputValidator.validate_criterion(loss)
-        return self
 
     def forward(self, X: ArrayType, train: Optional[bool] = None) -> ArrayType:
         """Forward pass through the network.

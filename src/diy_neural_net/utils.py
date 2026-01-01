@@ -9,6 +9,33 @@ np = get_numpy()
 
 np.random.seed(42)
 
+def _get_data_path(filename: str) -> pathlib.Path:
+    """Helper to find data files by searching current and parent directories."""
+    # List of paths to check:
+    # 1. ./Data (Run from root)
+    # 2. ../Data (Run from a subdir like notebooks/)
+    # 3. ../../Data (Run from deeper subdir)
+    # 4. Relative to this utils.py file (Run as installed package in editable mode)
+    
+    current_file_dir = pathlib.Path(__file__).resolve().parent
+    # src/diy_neural_net/ -> src/ -> root/
+    project_root = current_file_dir.parent.parent
+    
+    search_paths = [
+        pathlib.Path("Data") / filename,
+        pathlib.Path("..") / "Data" / filename,
+        pathlib.Path("../..") / "Data" / filename,
+        project_root / "Data" / filename
+    ]
+
+    for path in search_paths:
+        if path.exists():
+            return path
+
+    raise FileNotFoundError(
+        f"Could not find '{filename}'. Ensure the 'Data' folder exists in your project root.\n"
+        f"Searched locations: {[str(p) for p in search_paths]}"
+    )
 
 def train_test_split(
     X: ArrayType, y: ArrayType, test_size: float = 0.2
@@ -145,8 +172,11 @@ def load_binary_mnist() -> Tuple[ArrayType, ArrayType]:
     Returns:
         Tuple of (X, y) where X is image data and y is binary labels
     """
+    file_path = _get_data_path("balanced_mnist_1.csv")
+    print(f"Loading data from: {file_path}")
+    
     data = np_cpu.loadtxt(
-        pathlib.Path("Data", "balanced_mnist_1.csv"), delimiter=",", skiprows=1
+        file_path, delimiter=",", skiprows=1
     )
     X = data[:, 1:].transpose()
     y = data[:, 0].reshape(1, -1)
@@ -159,7 +189,10 @@ def load_mnist() -> Tuple[ArrayType, ArrayType]:
     Returns:
         Tuple of (X, y) where X is image data and y is digit labels
     """
-    data = np_cpu.loadtxt(pathlib.Path("Data", "train.csv"), delimiter=",", skiprows=1)
+    file_path = _get_data_path("train.csv")
+    print(f"Loading data from: {file_path}")
+
+    data = np_cpu.loadtxt(file_path, delimiter=",", skiprows=1)
 
     X = data[:, 1:].T / 255.0
     y = data[:, 0].reshape(1, -1)
@@ -190,10 +223,9 @@ def to_cpu(data):
 
 def plot_metrics(History: dict) -> None:
     """Plot training metrics from training history.
-
-    Args:
-        History: Dictionary containing training metrics with keys:
-                'Train_losses', 'Test_losses', 'Train_accuracy', 'Test_accuracy'
+    
+    Automatically detects if the task is Regression (Accuracy=0) or Classification
+    and plots accordingly.
     """
     try:
         train_accuracy = to_cpu(History["Train_accuracy"])
@@ -204,59 +236,44 @@ def plot_metrics(History: dict) -> None:
         plt.figure(1)
         plt.clf()
         plt.title("Loss per Epoch")
-        plt.plot(to_cpu(train_losses), label="Train loss", c="r")
-        plt.plot(to_cpu(test_losses), label="Test loss", c="b")
+        plt.plot(train_losses, label="Train loss", c="r")
+        plt.plot(test_losses, label="Test loss", c="b")
         plt.xlabel("Epochs")
         plt.ylabel("Loss")
         plt.legend()
-
-        y_train_max = max(train_losses)
-        y_train_min = min(train_losses)
-
-        y_test_max = max(test_losses)
-        y_test_min = min(test_losses)
-
-        y_min = min(y_test_min, y_train_min)
-        y_max = max(y_train_max, y_test_max)
-
-        plt.axis([0, len(train_losses), y_min - y_min * 0.1, y_max + y_max * 0.1])
         plt.grid(True)
+        
         try:
             plt.show()
         except Exception as e:
-            print(f"Plotting image failed due to : {e}, saving image instead")
+            print(f"Plotting loss failed due to : {e}, saving image instead")
             plt.savefig("losses.png")
 
-        plt.figure(2)
-        plt.clf()
-        plt.title("Accuracy per Epoch")
-        plt.plot(to_cpu(train_accuracy), label="Train accuracy", c="r")
-        plt.plot(to_cpu(test_accuracy), label="Test accuracy", c="b")
-        plt.xlabel("Epochs")
-        plt.ylabel("Accuracy")
-        plt.legend()
+        if np_cpu.max(train_accuracy) > 0 or np_cpu.max(test_accuracy) > 0:
+            plt.figure(2)
+            plt.clf()
+            plt.title("Accuracy per Epoch")
+            plt.plot(train_accuracy, label="Train accuracy", c="r")
+            plt.plot(test_accuracy, label="Test accuracy", c="b")
+            plt.xlabel("Epochs")
+            plt.ylabel("Accuracy")
+            plt.legend()
+            
+            y_min = min(np_cpu.min(train_accuracy), np_cpu.min(test_accuracy))
+            y_max = max(np_cpu.max(train_accuracy), np_cpu.max(test_accuracy))
+            plt.ylim([max(0, y_min - 0.1), min(1.0, y_max + 0.1)])
 
-        y_train_max = max(train_accuracy)
-        y_train_min = min(train_accuracy)
-
-        y_test_max = max(test_accuracy)
-        y_test_min = min(test_accuracy)
-
-        y_min = min(y_test_min, y_train_min)
-        y_max = max(y_train_max, y_test_max)
-
-        plt.axis([0, len(train_accuracy), y_min - y_min * 0.1, y_max + y_max * 0.1])
-        plt.grid(True)
-        try:
-            plt.show()
-        except Exception as e:
-            print(f"Plotting image failed due to : {e}, saving image instead")
-            plt.savefig("accuracies.png")
+            plt.grid(True)
+            try:
+                plt.show()
+            except Exception as e:
+                print(f"Plotting accuracy failed due to : {e}, saving image instead")
+                plt.savefig("accuracies.png")
+        else:
+            print("Regression task detected (Accuracy is 0). Skipping Accuracy plot.")
 
     except Exception as e:
-        print(
-            f"Error : {e}, PS : this function expects you chose to input validation data during fit if you chose not to that could be the source of the issue"
-        )
+        print(f"Error in plot_metrics: {e}")
 
 
 def create_mini_batches(
