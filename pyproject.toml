@@ -7,7 +7,7 @@ name = "diy-neural-net"
 version = "0.1.0"
 description = "A DIY neural network library built from scratch with NumPy/CuPy support"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 license = {file = "LICENSE"}
 authors = [
     {name = "Mohamed", email = "mohamedkhayat025@gmail.com"},
@@ -61,7 +61,7 @@ where = ["src"]
 "" = "src"
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py312"
 line-length = 88
 
 [tool.ruff.lint]
@@ -73,7 +73,7 @@ ignore = ["S101", "PLR0913", "PLR0912", "PLR0915"]
 "tests/**/*.py" = ["S101", "PLR2004", "ANN"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

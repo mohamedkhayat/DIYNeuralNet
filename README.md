@@ -1,6 +1,6 @@
 # DIY Neural Network Library
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![CUDA](https://img.shields.io/badge/CUDA-12.8-green)
 ![Status](https://img.shields.io/badge/status-active-success)
