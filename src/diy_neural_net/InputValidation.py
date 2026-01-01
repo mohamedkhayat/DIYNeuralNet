@@ -1,7 +1,9 @@
-from typing import List, Union, Tuple, Any
+from typing import List, Union, Tuple, Any, TYPE_CHECKING
 
-from Losses import Loss
 from .DeviceSelector import ArrayType
+
+if TYPE_CHECKING:
+    from .Losses import Loss
 
 
 class InputValidator:

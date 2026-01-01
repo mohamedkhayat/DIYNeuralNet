@@ -9,13 +9,13 @@ The module demonstrates the usage of the DIY neural network library with various
 layer types, activation functions, optimizers, and loss functions.
 """
 
-from .DeviceSelector import get_numpy, is_gpu_available
-from .Optimizer import Adam
-from . import utils
-from .Network import NeuralNetwork
-from .Losses import BCELoss, CrossEntropyLossWithLogits, MSELoss
-from .Layers import Dense, Dropout, BatchNorm
-from .Activations import ReLU, Sigmoid
+from diy_neural_net.DeviceSelector import get_numpy, is_gpu_available
+from diy_neural_net.Optimizer import Adam
+from diy_neural_net import utils
+from diy_neural_net.Network import NeuralNetwork
+from diy_neural_net.Losses import BCELoss, CrossEntropyLossWithLogits, MSELoss
+from diy_neural_net.Layers import Dense, Dropout, BatchNorm
+from diy_neural_net.Activations import ReLU, Sigmoid
 
 np = get_numpy()
 _GPU_AVAILABLE: bool = is_gpu_available()

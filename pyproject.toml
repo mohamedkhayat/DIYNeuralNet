@@ -31,12 +31,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "numpy>=2.4.0",
+    "numpy>=2.0.0",
     "matplotlib>=3.10.8",
 ]
 
 [project.optional-dependencies]
-gpu = ["cupy-cuda13x>=13.6.0"]
+gpu = ["cupy"]
 dev = [
     "pytest>=6.0",
     "pytest-cov>=2.0",
@@ -55,10 +55,10 @@ all = ["diy-neural-net[gpu,dev]"]
 diy-neural-net-demo = "diy_neural_net.main:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 
 [tool.setuptools.package-dir]
-"diy_neural_net" = "diy_neural_net"
+"" = "src"
 
 [tool.ruff]
 target-version = "py38"

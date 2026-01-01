@@ -1,0 +1,11 @@
+# .dockerignore
+__pycache__
+*.pyc
+.git
+.venv
+.vscode
+*.egg-info
+build
+dist
+.ruff_cache
+Data
