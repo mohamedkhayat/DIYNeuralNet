@@ -1,185 +1,134 @@
-# DIY Neural Network Library
+# DIY Neural Net
 
-![Python](https://img.shields.io/badge/python-3.12%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![CUDA](https://img.shields.io/badge/CUDA-12.8-green)
-![Status](https://img.shields.io/badge/status-active-success)
-![Code Style](https://img.shields.io/badge/code%20style-ruff-000000.svg)
+<p>
+  <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white">
+  <img alt="NumPy / CuPy" src="https://img.shields.io/badge/backend-NumPy%20%7C%20CuPy-013243?logo=numpy&logoColor=white">
+  <img alt="No autograd" src="https://img.shields.io/badge/autograd-none-555">
+  <img alt="Ruff" src="https://img.shields.io/badge/code%20style-ruff-000000">
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-blue"></a>
+</p>
 
-A modular deep learning framework built entirely from scratch using **NumPy** and **CuPy**. 
+**A deep-learning library written from scratch in NumPy, with every forward and backward pass derived by hand.** There is no autograd: each layer, activation and loss implements its own `backward()`, and the chain rule is visible in the code. The same code runs on the GPU when CuPy is installed and falls back to NumPy otherwise. It covers dense layers with He/Glorot initialization, BatchNorm with running statistics, inverted dropout, ReLU/Sigmoid/Tanh, softmax cross-entropy, BCE and MSE losses, SGD, momentum, RMSProp and Adam with bias correction, mini-batching and early stopping.
 
-**This project is first and foremost an educational tool.** It is designed to bridge the gap between reading equations in a textbook and seeing them run on a GPU. It implements modern features like **Adam Optimization** and **Batch Normalization** without the "black box" magic of Autograd engines like PyTorch or TensorFlow.
+It is built to be read. The training loop is plain Python, each component is a small class, and the backward passes are checked against finite differences in the test suite.
 
----
+<p align="center">
+  <img alt="A 2-48-48-1 tanh network trained with this library on the two-spirals problem: the decision boundary starts as a straight line, bends around the inner arms, and by epoch 92 separates both spirals completely, while train loss falls to zero and accuracy reaches 100%" src="assets/readme/boundary.gif" width="100%">
+</p>
+<p align="center"><sub>A 2-48-48-1 tanh network learning the two-spirals problem with this library (Adam, lr 0.01). Each frame is a real checkpoint; the background is the network's predicted probability over the plane.</sub></p>
 
-## 🎯 Goal & Philosophy
+## How it fits together
 
-The primary goal of this project is to provide a **readable, approachable codebase** for beginners who want to understand *exactly* how Deep Learning works under the hood.
-
-### 1. A "Glass Box" Playground
-This library offers the best of both worlds:
-- **For the Beginner:** The complex training loop is abstracted away. You can treat the library like a playground—rapidly swapping Optimizers (SGD vs Adam), tweaking Hyperparameters (Learning Rate, Momentum), and changing Weight Initializations (He vs Glorot) to build intuition on how they affect convergence.
-- **For the Curious:** Unlike big frameworks where the training logic is hidden behind C++ bindings, here the `fit()` loop is written in pure, readable Python. You can click "Go to Definition" and understand exactly how gradients are applied and metrics are tracked.
-
-### 2. An Extensible Blueprint
-This project serves as a template for anyone wanting to build their own deep learning components. It provides a standardized architecture:
-- Want to add **LeakyReLU**? Subclass `Activation`.
-- Want to implement **Huber Loss**? Subclass `Loss`.
-- Want to try **Adagrad**? Subclass `Optimizer`.
-
-You simply inherit from the base class and implement `__init__`, `forward`, and `backward` (or `step`). The modular design handles the rest, removing the intimidation factor of contributing to complex libraries.
-
-### 3. No Magic, Just Math
-- **No C++ / CUDA Code Required:** The heavy lifting is done by `numpy` (or `cupy`), but the logic is pure Python.
-- **Math $\leftrightarrow$ Code:** The code is written to look as close to the mathematical derivation as possible.
-- **No Autograd Magic:** Gradients are calculated via explicit backward pass methods, forcing you to understand the Chain Rule rather than relying on automatic differentiation.
-
-## ⚡ Features
-
-- **Hardware Acceleration**: Automatic backend switching. Uses **CuPy** if a GPU is detected, falls back to **NumPy** on CPU.
-- **Modern Optimizers**:
-  - **Adam** (Adaptive Moment Estimation) with bias correction.
-  - **RMSProp** & **SGD** with Momentum.
-- **Advanced Layers**:
-  - **Batch Normalization**: Full forward/backward implementation with running statistics for inference.
-  - **Dropout**: Inverted dropout scaling for training stability.
-  - **Dense**: Fully connected layers with He/Glorot initialization.
-- **Robust Training Loop**:
-  - Mini-batch processing.
-  - Early Stopping with patience.
-  - Real-time metric tracking.
-- **Tasks**:
-  - Binary Classification (`BCELoss`)
-  - Multi-Class Classification (`CrossEntropyLossWithLogits`)
-  - Regression (`MSELoss`)
-
----
-
-## 🛠️ Installation
-
-### Option A: Docker (Recommended for GPU)
-The provided Docker image is optimized for the latest NVIDIA hardware (RTX 5090 / CUDA 12.8) and handles all compiler dependencies for CuPy.
-
-1. **Build the image:**
-   ```bash
-   docker build -t diy-neural-net .
-   ```
-
-2. **Run the container:**
-   ```bash
-   docker run -it --rm --gpus all -v "$(pwd)":/workspace diy-neural-net bash
-   ```
-
-### Option B: Local Installation (pip)
-If you have a CUDA environment set up locally:
-
-```bash
-# Clone the repo
-git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
-cd DIYNeuralNet
-
-# Install in editable mode with GPU support
-pip install -e ".[gpu]"
-
-# Or for CPU only
-pip install -e .
+```mermaid
+flowchart LR
+    X["X<br/>(features × batch)"] --> D1["Dense<br/>W·X + b"] --> B1["BatchNorm"] --> A1["ReLU"] --> D2["Dense"] --> L["Loss<br/>softmax CE · BCE · MSE"]
+    L -. "dL/dŷ" .-> D2
+    D2 -. "dA" .-> A1 -. "dA" .-> B1 -. "dA" .-> D1
+    D1 & B1 & D2 -- "params + grads" --> O["Optimizer.step()<br/>SGD · Momentum · RMSProp · Adam"]
 ```
 
----
+Every building block follows one contract:
 
-## 🚀 Quick Start
+| Base class | Implement | Examples in the library |
+|---|---|---|
+| `Layer` | `forward(X, train)`, `backward(dA)`, `params` / `grads` dicts | `Dense`, `BatchNorm`, `Dropout` |
+| `Activation` | `forward(Z)`, `backward(dA)` | `ReLU`, `Sigmoid`, `Tanh` |
+| `Loss` | `__call__(y, ŷ)`, `backward(y, ŷ)` | `CrossEntropyLossWithLogits`, `BCELoss`, `MSELoss` |
+| `Optimizer` | `step()` over every layer's `params` and `grads` | `GradientDescent`, `GradientDescentWithMomentum`, `RMSProp`, `Adam` |
 
-Here is how to train a model on MNIST using the library.
+To add LeakyReLU, Huber loss or Adagrad, you subclass one of these and write the math.
 
-### 1. Define the Architecture
-The API mimics the Sequential style of modern frameworks but requires explicit understanding of input/output dimensions.
+## Quickstart
+
+```bash
+git clone https://github.com/mohamedkhayat/DIYNeuralNet.git
+cd DIYNeuralNet
+pip install -e ".[gpu]"     # CuPy for NVIDIA GPUs; use `pip install -e .` for CPU only
+```
+
+A Dockerfile with CUDA 12.8 and the CuPy build dependencies is included:
+
+```bash
+docker build -t diy-neural-net .
+docker run -it --rm --gpus all -v "$(pwd)":/workspace diy-neural-net bash
+```
+
+Train a classifier on MNIST:
 
 ```python
-from diy_neural_net import NeuralNetwork
-from diy_neural_net.Layers import Dense, BatchNorm, Dropout
-from diy_neural_net.Activations import ReLU
+from diy_neural_net import NeuralNetwork, Dense, BatchNorm, Dropout, ReLU, utils
 from diy_neural_net.Losses import CrossEntropyLossWithLogits
 from diy_neural_net.Optimizer import Adam
 
-# 784 Inputs (MNIST) -> 10 Outputs (Digits)
+X, y = utils.load_mnist()                     # Data/train.csv, see "Data" below
+X_train, X_test, y_train, y_test = utils.train_test_split(X, y, test_size=0.15)
+
 model = NeuralNetwork.Sequential([
-    Dense(784, 512, initializer="he"),
-    BatchNorm(512),
-    ReLU(),
-    Dropout(keep_prob=0.8),
-    
-    Dense(512, 128, initializer="he"),
-    BatchNorm(128),
-    ReLU(),
-    
-    Dense(128, 10, initializer="glorot") 
-    # Note: Softmax is handled numerically inside CrossEntropyLossWithLogits
+    Dense(784, 512, initializer="he"), BatchNorm(512), ReLU(),
+    Dense(512, 256, initializer="he"), BatchNorm(256), ReLU(), Dropout(keep_prob=0.85),
+    Dense(256, 128, initializer="he"), BatchNorm(128), ReLU(), Dropout(keep_prob=0.85),
+    Dense(128, 10, initializer="glorot"),     # logits; the loss applies a stable softmax
 ])
-```
-
-### 2. Configure & Train
-```python
-# Load Data
-from diy_neural_net import utils
-X, y = utils.load_mnist()
-X_train, X_test, y_train, y_test = utils.train_test_split(X, y)
-
-# Set Loss & Optimizer
 model.set_loss(CrossEntropyLossWithLogits())
-optimizer = Adam(model, lr=0.001)
 
-# Train
-history = model.fit(
-    X_train, y_train,
-    optimizer=optimizer,
-    epochs=20,
-    batch_size=256,
-    validation_data=(X_test, y_test),
-    early_stopping_patience=5
-)
-
-# Visualize
+history = model.fit(X_train, y_train, optimizer=Adam(model, lr=1e-3), epochs=30, batch_size=64,
+                    validation_data=(X_test, y_test), early_stopping_patience=5)
 utils.plot_metrics(history)
 ```
 
----
+Data is laid out as `(features, samples)`, matching the math in most textbooks.
 
-## 📂 Project Structure
+## Results
+
+The notebooks in `notebooks/` run end to end on the library:
+
+| Notebook | Task | Result |
+|---|---|---|
+| `01_Binary_Classification` | MNIST, two classes (`Data/balanced_mnist_1.csv`) | 97.60% test accuracy, 3.8 s on GPU |
+| `02_Multiclass_MNIST` | MNIST, 10 classes, network above | 97.90% test accuracy, early-stopped at epoch 16, 20.7 s on GPU |
+| `03_Regression_Synthetic` | noisy synthetic regression, MSE | fitted curve vs. data plot |
+
+Same 784-512-256-128-10 BatchNorm network, same seed, 12 epochs, batch 64, on 35,700 / 6,300 MNIST images (RTX 5090, CuPy):
+
+| Optimizer | Val accuracy (final) | Val accuracy (best) | Time per epoch |
+|---|---|---|---|
+| SGD (lr 0.1) | 97.51% | 97.68% | 0.92 s |
+| Momentum (lr 0.1, β 0.9) | 97.35% | 97.57% | 0.83 s |
+| RMSProp (lr 1e-3) | 97.75% | 97.90% | 0.93 s |
+| Adam (lr 1e-3) | 97.17% | 97.67% | 1.13 s |
+
+<sub>Produced by `assets/readme/build_assets.py`; raw histories in `assets/readme/optimizers.json`.</sub>
+
+## Correctness
+
+Hand-written backward passes are easy to get subtly wrong, and adaptive optimizers like Adam can hide a mis-scaled gradient. `tests/test_gradients.py` therefore compares every analytic gradient (Dense, BatchNorm, softmax cross-entropy) against central finite differences, and checks that the softmax stays finite for very large logits.
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+## Data
+
+- `Data/balanced_mnist_1.csv` (binary task) is in the repository.
+- `Data/train.csv` (10-class task) is the `train.csv` from Kaggle's [Digit Recognizer](https://www.kaggle.com/c/digit-recognizer/data) competition: 42,000 labelled images, pixel columns after a `label` column. Place it in `Data/`.
+
+## Project layout
 
 ```
-├── src/diy_neural_net/
-│   ├── Network.py          # Main model class (Sequential)
-│   ├── Layers.py           # Dense, Dropout, BatchNorm
-│   ├── Optimizer.py        # SGD, RMSProp, Adam
-│   ├── Activations.py      # ReLU, Sigmoid, Tanh
-│   ├── Losses.py           # BCE, MSE, CrossEntropy
-│   ├── DeviceSelector.py   # CPU/GPU logic
-│   └── utils.py            # Data loading & Plotting
-├── tests/                  # Unit and Integration tests
-├── Data/                   # Datasets (MNIST, etc.)
-├── notebooks/              # Jupyter notebooks for demos
-├── pyproject.toml          # Package configuration
-└── Dockerfile              # CUDA 12.8 environment
+src/diy_neural_net/
+├── Network.py         Sequential model, fit / train / evaluate / predict
+├── Layers.py          Dense, BatchNorm, Dropout
+├── Activations.py     ReLU, Sigmoid, Tanh
+├── Losses.py          softmax cross-entropy, BCE, MSE
+├── Optimizer.py       SGD, momentum, RMSProp, Adam
+├── EarlyStopping.py
+├── DeviceSelector.py  CuPy if a GPU is available, NumPy otherwise
+└── utils.py           data loading, splitting, mini-batches, plotting
+tests/                 unit, integration and gradient-check tests
+notebooks/             binary, multiclass and regression walkthroughs
 ```
-
----
-
-## 📊 Benchmarks
-
-On the MNIST dataset (35,000 images):
-
-| Optimizer | Accuracy | Time/Epoch (RTX 5090) |
-|-----------|----------|-----------------------|
-| GradientDescent | 92.4% | ~0.8s |
-| **Adam** | **97.8%** | **~0.9s** |
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
----
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).

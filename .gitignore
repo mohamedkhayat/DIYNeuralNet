@@ -166,3 +166,6 @@ Data/*
 
 # vscode cache
 .vscode
+# README asset build: downloaded fonts and PNG previews
+assets/readme/.fonts/
+assets/readme/*.png
