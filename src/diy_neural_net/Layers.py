@@ -112,9 +112,8 @@ class Dense(Layer):
         Returns:
             Gradient of loss with respect to layer input
         """
-        batch_size = self.input.shape[1]
-
-        self.grads["dW"] = dZ @ self.input.T / batch_size
+        # dZ already carries the 1/batch_size of the mean loss, so no extra division here
+        self.grads["dW"] = dZ @ self.input.T
         self.grads["db"] = np.sum(dZ, axis=1, keepdims=True)
 
         dA_prev = self.params["W"].T @ dZ

@@ -109,7 +109,7 @@ class CrossEntropyLossWithLogits(Loss):
 
         Args:
             y_true: True class labels (one-hot encoded) with shape (num_classes, batch_size)
-            y_pred: Predicted class probabilities with shape (num_classes, batch_size)
+            y_pred: Raw logits with shape (num_classes, batch_size); softmax is applied here
 
         Returns:
             Average cross-entropy loss
@@ -118,27 +118,26 @@ class CrossEntropyLossWithLogits(Loss):
 
         self.batch_size = y_true.shape[1]
 
-        epsilon = 1e-8
-        y_pred = np.clip(y_pred, epsilon, 1.0 - epsilon)
-        log_pred = np.log(y_pred)
-        selected_log_preds = np.sum(log_pred * y_true, axis=0)
+        # log-softmax with the max subtracted, so large logits cannot overflow exp()
+        shifted = y_pred - np.max(y_pred, axis=0, keepdims=True)
+        log_probs = shifted - np.log(np.sum(np.exp(shifted), axis=0, keepdims=True))
 
-        loss = -np.mean(selected_log_preds)
-
-        return loss
+        return -np.mean(np.sum(log_probs * y_true, axis=0))
 
     def backward(self, y_true: ArrayType, y_pred: ArrayType) -> ArrayType:
         """Compute gradient of cross-entropy loss.
 
         Args:
             y_true: True class labels (one-hot encoded)
-            y_pred: Predicted class probabilities
+            y_pred: Raw logits (the gradient is softmax(logits) - y_true)
 
         Returns:
             Gradient of loss with respect to predictions
         """
         y_true, y_pred = InputValidator.validate_same_shape(y_true, y_pred)
-        return (y_pred - y_true) / self.batch_size
+        shifted = np.exp(y_pred - np.max(y_pred, axis=0, keepdims=True))
+        probs = shifted / np.sum(shifted, axis=0, keepdims=True)
+        return (probs - y_true) / self.batch_size
 
 
 class MSELoss(Loss):
